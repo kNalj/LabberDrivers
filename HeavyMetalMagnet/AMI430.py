@@ -1006,7 +1006,7 @@ class Driver(LabberDriver):
             z_ramp_state = self.get_ramp_state(self.z_magnet_socket)
             time.sleep(0.5)
 
-            # Make sure the result filed is close to zero when the measurement is done
+            # Make sure the result field is close to zero when the measurement is done
             if x_ramp_state == 1 and y_ramp_state == 1 and z_ramp_state == 1:
                 time.sleep(1)
                 self.pause_ramp(self.x_magnet_socket)

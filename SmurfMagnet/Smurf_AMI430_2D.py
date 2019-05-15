@@ -392,6 +392,10 @@ class Driver(LabberDriver):
         self.start_ramping(magnet_socket)
         return True
 
+    def set_set_point(self, magnet_socket, value):
+        self.pause_ramp(magnet_socket)
+        self._send(magnet_socket, "CONF:FIELD:TARG {} ;".format(float(value)))
+
     def get_set_point(self, magnet_socket):
         """
         Get the current set point of the field. The is the value to which we are trying to ramp the field to.
@@ -663,14 +667,19 @@ class Driver(LabberDriver):
         :return:
         """
 
-        number_of_magnets_currently_ramping = 0
         radius = np.sqrt(target_z * target_z + target_y * target_y)
         self.pause_ramp(self.z_magnet_socket)
         self.pause_ramp(self.y_magnet_socket)
-		
+
         # Radius should never be more then 1T ( can be adjusted to anz other value for testing purposes)
-        if radius >= 2.9:
+        if radius > 2.9:
+            self.getValueFromUserDialog(value="Don't put anything here",
+                                        text="Field will exceed the maximum allowed value (sweep canceled)",
+                                        title="Burn after reading")
             return False
+        else:
+            self.set_set_point(self.y_magnet_socket, target_y)
+            self.set_set_point(self.z_magnet_socket, target_z)
 
         # Restart treshold should be at 0.9 (for testing purposes it is changed to whatever number i find suitable)
         restart_all_threshold = 2.8  # When the field falls to 90% of max value, restart ramping
@@ -682,9 +691,8 @@ class Driver(LabberDriver):
 
         if radius < restart_all_threshold:
             # If the field is in "safe zone (less then 0.9)" start ramping all magnets
-            self.set_field(self.z_magnet_socket, target_z)
-            self.set_field(self.y_magnet_socket, target_y)
-            number_of_magnets_currently_ramping = 2
+            self.start_ramping(self.y_magnet_socket)
+            self.start_ramping(self.z_magnet_socket)
         else:
             # If the field is not in "safe zone" only start ramping those magnets which will decrease the total value
             # of the field
@@ -693,10 +701,10 @@ class Driver(LabberDriver):
             # value of the field
             if target_z * z >= 0:
                 if np.abs(target_z) < np.abs(z):  # This is decreasing the field
-                    self.set_field(self.z_magnet_socket, target_z)
+                    self.start_ramping(self.z_magnet_socket)
             if target_y * y >= 0:
                 if np.abs(target_y) < np.abs(y):
-                    self.set_field(self.y_magnet_socket, target_y)
+                    self.start_ramping(self.y_magnet_socket)
 
         z_ramp_state = self.get_ramp_state(self.z_magnet_socket)
         y_ramp_state = self.get_ramp_state(self.y_magnet_socket)
@@ -704,9 +712,16 @@ class Driver(LabberDriver):
         # loop that keeps checking if we left the the safe zone, and stop some magnets if we did
         # additionally it keeps checking if we went back to the safe zone and restarts the magnets
         while True:
+
+            if self.isStopped():
+                self.pause_ramp(self.y_magnet_socket)
+                self.pause_ramp(self.z_magnet_socket)
+                return False
+
             z = self.get_field(self.z_magnet_socket)
             y = self.get_field(self.y_magnet_socket)
             radius, phi = self.cartesian_to_polar(z, y)
+            self.reportStatus("Y: {}, Z: {}".format(y, z))
 
             # Radius should never be more then 1T ( can be adjusted to anz other value for testing purposes)
             if radius > 2.9:
@@ -780,6 +795,9 @@ class Driver(LabberDriver):
             z_ramp_state = self.get_ramp_state(self.z_magnet_socket)
             y_ramp_state = self.get_ramp_state(self.y_magnet_socket)
 
-            # Make sure the result filed is close to zero when the measurement is done
+            # Make sure the result field is close to zero when the measurement is done
             if z_ramp_state == 1 and y_ramp_state == 1:
+                time.sleep(1)
+                self.pause_ramp(self.y_magnet_socket)
+                self.pause_ramp(self.z_magnet_socket)
                 return True
