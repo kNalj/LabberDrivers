@@ -58,42 +58,55 @@ class Driver(InstrumentDriver.InstrumentWorker):
         return the actual value set by the instrument"""
         #Simple booleans
         if quant.name in ['SigOut1On', 'SigOut2On'] + \
-                        ['SigIn1AC', 'SigIn2AC'] + \
-                        ['Mod1On', 'Mod2On'] + \
-                        ['Out'+str(x+1)+'SigOut' + str(y+1) + 'On' for x in range(8) for y in range(2)] + \
-                        ['Demod'+str(x+1)+'On' for x in range(8)]:
+                ['SigIn1AC', 'SigIn2AC'] + \
+                ['Mod1On', 'Mod2On'] + \
+                ['Out'+str(x+1)+'SigOut' + str(y+1) + 'On' for x in range(8) for y in range(2)] + \
+                ['Demod'+str(x+1)+'On' for x in range(8)] + \
+                ["LowPassFilter"+str(x+1)+"Sinc" for x in range(8)]:
             self.ziConnection.setInt(str(quant.get_cmd % self.device), 1 if value else 0)
         #Simple floating points
         elif quant.name in ['SigIn1Range', 'SigIn2Range'] + \
-                        ['Oscillator'+str(x+1)+'Frequency' for x in range(8)] + \
-                        ['Out'+str(x+1)+'SigOut' + str(y+1) + 'Amp' for x in range(8) for y in range(2)] + \
-                        ['SigOut1Offset', 'SigOut2Offset'] + \
-                        ['Demod'+str(x+1)+'RefPhase' for x in range(8)] + \
-                        ['Demod'+str(x+1)+'TC' for x in range(8)] + \
-                        ['Demod'+str(x+1)+'SampleRate' for x in range(8)] + \
-                        ['Mod1Phase', 'Mod2Phase'] + \
-                        ['Mod1SB1Phase', 'Mod2SB1Phase'] + \
-                        ['Mod1SB2Phase', 'Mod2SB2Phase'] + \
-                        ['Mod1TC', 'Mod2TC'] + \
-                        ['Mod1SB1TC', 'Mod2SB1TC'] + \
-                        ['Mod1SB2TC', 'Mod2SB2TC'] + \
-                        ['Mod1OutAmp', 'Mod2OutAmp'] + \
-                        ['Mod1SB1OutAmp', 'Mod2SB1OutAmp'] + \
-                        ['Mod1SB2OutAmp', 'Mod2SB2OutAmp']:
+                ['Oscillator'+str(x+1)+'Frequency' for x in range(8)] + \
+                ['Out'+str(x+1)+'SigOut' + str(y+1) + 'Amp' for x in range(8) for y in range(2)] + \
+                ['SigOut1Offset', 'SigOut2Offset'] + \
+                ['Demod'+str(x+1)+'RefPhase' for x in range(8)] + \
+                ['Demod'+str(x+1)+'TC' for x in range(8)] + \
+                ['Demod'+str(x+1)+'SampleRate' for x in range(8)] + \
+                ['Mod1Phase', 'Mod2Phase'] + \
+                ['Mod1SB1Phase', 'Mod2SB1Phase'] + \
+                ['Mod1SB2Phase', 'Mod2SB2Phase'] + \
+                ['Mod1TC', 'Mod2TC'] + \
+                ['Mod1SB1TC', 'Mod2SB1TC'] + \
+                ['Mod1SB2TC', 'Mod2SB2TC'] + \
+                ['Mod1OutAmp', 'Mod2OutAmp'] + \
+                ['Mod1SB1OutAmp', 'Mod2SB1OutAmp'] + \
+                ['Mod1SB2OutAmp', 'Mod2SB2OutAmp'] + \
+                ["LowPassFilter"+str(x+1)+"TC" for x in range(8)]:
             self.ziConnection.setDouble(str(quant.get_cmd % self.device), float(value))
-        #Combos (Oscillator-selector for demodulators and Modulator mode)
+        # Combos (Oscillator-selector for demodulators and Modulator mode)
         elif quant.name in ['Demod'+str(x+1)+'Osc' for x in range(8)] + \
-                            ['Mod1Mode', 'Mod2Mode'] + \
-                            ['Mod1SB1Mode', 'Mod2SB1Mode'] + \
-                            ['Mod1SB2Mode', 'Mod2SB2Mode'] + \
-                            ['Mod1Osc', 'Mod2Osc'] + \
-                            ['Mod1SB1Osc', 'Mod2SB1Osc'] + \
-                            ['Mod1SB2Osc', 'Mod2SB2Osc']:
+                ['Mod1Mode', 'Mod2Mode'] + \
+                ['Mod1SB1Mode', 'Mod2SB1Mode'] + \
+                ['Mod1SB2Mode', 'Mod2SB2Mode'] + \
+                ['Mod1Osc', 'Mod2Osc'] + \
+                ['Mod1SB1Osc', 'Mod2SB1Osc'] + \
+                ['Mod1SB2Osc', 'Mod2SB2Osc'] + \
+                ["LowPassFilter"+str(x+1)+"Order" for x in range(8)]:
             # convert input to integer
             intValue = int(quant.getCmdStringFromValue(value))
             self.ziConnection.setInt(str(quant.get_cmd % self.device), intValue)
+        elif quant.name in ["LowPassFilter" + str(x+1) + "Bw3db" for x in range(8)]:
+            order_cmd = "/{}/demods/{}/order".format(self.device, str(int(quant.name[13])-1))
+            order = self.ziConnection.getDouble(str(order_cmd))
+            value = zi.bw2tc(value, order)
+            self.ziConnection.setDouble(str(quant.get_cmd % self.device), float(value))
+        elif quant.name in ["LowPassFilter" + str(x+1) + "BwNep" for x in range(8)]:
+            quotes = {1: 0.2500, 2: 0.1250, 3: 0.0938, 4: 0.0781, 5: 0.0684, 6: 0.0615, 7: 0.0564, 8: 0.0524}
+            order_cmd = "/{}/demods/{}/order".format(self.device, str(int(quant.name[13])-1))
+            order = self.ziConnection.getDouble(str(order_cmd))
+            tc = quotes[order] / value
+            self.ziConnection.setDouble(str(quant.get_cmd % self.device), float(tc))
         return value
-
 
     def performGetValue(self, quant, options={}):
         if self.isFirstCall(options):
@@ -101,32 +114,34 @@ class Driver(InstrumentDriver.InstrumentWorker):
             self.traceBuffer = {}
         """Perform the Get Value instrument operation"""
         # proceed depending on quantity
-        #Simple booleans
+        # Simple booleans
         if quant.name in ['SigOut1On', 'SigOut2On'] + \
-                        ['SigIn1AC', 'SigIn2AC'] + \
-                        ['Mod1On', 'Mod2On'] + \
-                        ['Out'+str(x+1)+'SigOut' + str(y+1) + 'On' for x in range(8) for y in range(2)] + \
-                        ['Demod'+str(x+1)+'On' for x in range(8)]:
+                ['SigIn1AC', 'SigIn2AC'] + \
+                ['Mod1On', 'Mod2On'] + \
+                ['Out'+str(x+1)+'SigOut' + str(y+1) + 'On' for x in range(8) for y in range(2)] + \
+                ['Demod'+str(x+1)+'On' for x in range(8)] + \
+                ["LowPassFilter"+str(x+1)+"Sinc" for x in range(8)]:
             return (self.ziConnection.getInt(str(quant.get_cmd % self.device)) > 0)
-        #Simple floating points
+        # Simple floating points
         elif quant.name in ['SigIn1Range', 'SigIn2Range'] + \
-                        ['Oscillator'+str(x+1)+'Frequency' for x in range(8)] + \
-                        ['Out'+str(x+1)+'SigOut' + str(y+1) + 'Amp' for x in range(8) for y in range(2)] + \
-                        ['SigOut1Offset', 'SigOut2Offset'] + \
-                        ['Demod'+str(x+1)+'RefPhase' for x in range(8)] + \
-                        ['Demod'+str(x+1)+'TC' for x in range(8)] + \
-                        ['Demod'+str(x+1)+'SampleRate' for x in range(8)] + \
-                        ['Mod1Phase', 'Mod2Phase'] + \
-                        ['Mod1SB1Phase', 'Mod2SB1Phase'] + \
-                        ['Mod1SB2Phase', 'Mod2SB2Phase'] + \
-                        ['Mod1TC', 'Mod2TC'] + \
-                        ['Mod1SB1TC', 'Mod2SB1TC'] + \
-                        ['Mod1SB2TC', 'Mod2SB2TC'] + \
-                        ['Mod1OutAmp', 'Mod2OutAmp'] + \
-                        ['Mod1SB1OutAmp', 'Mod2SB1OutAmp'] + \
-                        ['Mod1SB2OutAmp', 'Mod2SB2OutAmp']:
+                ['Oscillator'+str(x+1)+'Frequency' for x in range(8)] + \
+                ['Out'+str(x+1)+'SigOut' + str(y+1) + 'Amp' for x in range(8) for y in range(2)] + \
+                ['SigOut1Offset', 'SigOut2Offset'] + \
+                ['Demod'+str(x+1)+'RefPhase' for x in range(8)] + \
+                ['Demod'+str(x+1)+'TC' for x in range(8)] + \
+                ['Demod'+str(x+1)+'SampleRate' for x in range(8)] + \
+                ['Mod1Phase', 'Mod2Phase'] + \
+                ['Mod1SB1Phase', 'Mod2SB1Phase'] + \
+                ['Mod1SB2Phase', 'Mod2SB2Phase'] + \
+                ['Mod1TC', 'Mod2TC'] + \
+                ['Mod1SB1TC', 'Mod2SB1TC'] + \
+                ['Mod1SB2TC', 'Mod2SB2TC'] + \
+                ['Mod1OutAmp', 'Mod2OutAmp'] + \
+                ['Mod1SB1OutAmp', 'Mod2SB1OutAmp'] + \
+                ['Mod1SB2OutAmp', 'Mod2SB2OutAmp'] + \
+                ["LowPassFilter"+str(x+1)+"TC" for x in range(8)]:
             return self.ziConnection.getDouble(str(quant.get_cmd % self.device))
-        #Read-out channels of demodulator
+        # Read-out channels of demodulator
         elif quant.name in ['Demod'+str(x+1)+'R' for x in range(8)] + \
                         ['Demod'+str(x+1)+'phi' for x in range(8)] + \
                         ['Demod'+str(x+1)+'X' for x in range(8)] + \
@@ -201,16 +216,32 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 signal = quant.getTraceDict(np.degrees(np.arctan2(np.array(data["y"][:nPoints]), np.array(data["x"][:nPoints]))), t0=0.0, dt=dt)
                 return signal
             return quant.getTraceDict([])
-        #Combos (Oscillator-selector for demodulators and Modulator mode)
+        # Combos (Oscillator-selector for demodulators and Modulator mode)
         elif quant.name in ['Demod'+str(x+1)+'Osc' for x in range(8)] + \
-                            ['Mod1Mode', 'Mod2Mode'] + \
-                            ['Mod1SB1Mode', 'Mod2SB1Mode'] + \
-                            ['Mod1SB2Mode', 'Mod2SB2Mode'] + \
-                            ['Mod1Osc', 'Mod2Osc'] + \
-                            ['Mod1SB1Osc', 'Mod2SB1Osc'] + \
-                            ['Mod1SB2Osc', 'Mod2SB2Osc']:
+                ['Mod1Mode', 'Mod2Mode'] + \
+                ['Mod1SB1Mode', 'Mod2SB1Mode'] + \
+                ['Mod1SB2Mode', 'Mod2SB2Mode'] + \
+                ['Mod1Osc', 'Mod2Osc'] + \
+                ['Mod1SB1Osc', 'Mod2SB1Osc'] + \
+                ['Mod1SB2Osc', 'Mod2SB2Osc'] + \
+                ["LowPassFilter"+str(x+1)+"Order" for x in range(8)]:
             return quant.getValueFromCmdString(self.ziConnection.getInt(str(quant.get_cmd % self.device)))
         # for other quantities, just return current value of control
+        elif quant.name in ["LowPassFilter" + str(x+1) + "Bw3db" for x in range(8)]:
+            order_cmd = "/{}/demods/{}/order".format(self.device, str(int(quant.name[13])-1))
+            order = self.ziConnection.getDouble(str(order_cmd))
+            tc_cmd = "/{}/demods/{}/timeconstant".format(self.device, str(int(quant.name[13])-1))
+            tc = self.ziConnection.getDouble(str(tc_cmd))
+            value = zi.tc2bw(tc, order)
+            return value
+        elif quant.name in ["LowPassFilter" + str(x+1) + "BwNep" for x in range(8)]:
+            quotes = {1: 0.2500, 2: 0.1250, 3: 0.0938, 4: 0.0781, 5: 0.0684, 6: 0.0615, 7: 0.0564, 8: 0.0524}
+            order_cmd = "/{}/demods/{}/order".format(self.device, str(int(quant.name[13])-1))
+            order = self.ziConnection.getDouble(str(order_cmd))
+            tc_cmd = "/{}/demods/{}/timeconstant".format(self.device, str(int(quant.name[13])-1))
+            tc = self.ziConnection.getDouble(str(tc_cmd))
+            value = 1 / tc * quotes[order]
+            return value
         return quant.getValue()
 
 

@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2fed8941-572c-4053-a356-ab15a1845f81" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ZIUHFLI/readme" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,20 +13,45 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ZIUHFLI/readme">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="289">
-                <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="55">
+                  <caret line="2794" column="20" lean-forward="true" selection-start-line="2794" selection-start-column="20" selection-end-line="2794" selection-end-column="20" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="323">
+                  <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
+                  <folding>
+                    <element signature="e#0#23#0" expanded="true" />
+                    <element signature="e#520#2059#0" />
+                    <element signature="e#2123#2191#0" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>SigOut1On</find>
+      <find>Mod1SB1Mode</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,6 +60,10 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/ZIUHFLI/readme" />
+        <option value="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" />
+        <option value="$PROJECT_DIR$/HeavyMetalMagnet/AMI430.py" />
+        <option value="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" />
+        <option value="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" />
       </list>
     </option>
   </component>
@@ -97,6 +126,21 @@
       <option name="presentableId" value="Default" />
       <updated>1557925841825</updated>
     </task>
+    <task id="LOCAL-00001" summary="Add ZIUHFLI guide">
+      <created>1557936560512</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1557936560512</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update Ami430 2D driver">
+      <created>1557938554709</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1557938554709</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -123,16 +167,60 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add ZIUHFLI guide" />
+    <MESSAGE value="Update Ami430 2D driver" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update Ami430 2D driver" />
+  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" />
-    <entry file="file://$PROJECT_DIR$/HeavyMetalMagnet/AMI430.py" />
+    <entry file="file://$PROJECT_DIR$/HeavyMetalMagnet/AMI430.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="847" column="11" selection-start-line="847" selection-start-column="11" selection-end-line="847" selection-end-column="11" />
+          <folding>
+            <element signature="e#966#2261#0" />
+            <element signature="e#2311#2544#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="661" column="11" lean-forward="true" selection-start-line="661" selection-start-column="11" selection-end-line="661" selection-end-column="11" />
+          <folding>
+            <element signature="e#745#1646#0" />
+            <element signature="e#1696#1892#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ZIUHFLI/readme">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="289">
-            <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+            <caret line="17" selection-start-line="17" selection-end-line="17" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="55">
+          <caret line="2794" column="20" lean-forward="true" selection-start-line="2794" selection-start-column="20" selection-end-line="2794" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#520#2059#0" />
+            <element signature="e#2123#2191#0" />
+          </folding>
         </state>
       </provider>
     </entry>
