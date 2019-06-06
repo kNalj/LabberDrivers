@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2fed8941-572c-4053-a356-ab15a1845f81" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" afterDir="false" />
@@ -16,11 +17,23 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="119">
+                  <caret line="71" column="24" lean-forward="true" selection-start-line="71" selection-start-column="24" selection-end-line="71" selection-end-column="24" />
+                  <folding>
+                    <element signature="e#0#23#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="55">
-                  <caret line="2794" column="20" lean-forward="true" selection-start-line="2794" selection-start-column="20" selection-end-line="2794" selection-end-column="20" />
+                <state relative-caret-position="1241">
+                  <caret line="133" column="15" lean-forward="true" selection-start-line="133" selection-start-column="15" selection-end-line="133" selection-end-column="15" />
                 </state>
               </provider>
             </entry>
@@ -32,12 +45,10 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="323">
-                  <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
+                <state relative-caret-position="-1924">
+                  <caret line="176" column="36" lean-forward="true" selection-start-line="176" selection-start-column="36" selection-end-line="176" selection-end-column="36" />
                   <folding>
                     <element signature="e#0#23#0" expanded="true" />
-                    <element signature="e#520#2059#0" />
-                    <element signature="e#2123#2191#0" />
                   </folding>
                 </state>
               </provider>
@@ -51,9 +62,25 @@
     <findStrings>
       <find>SigOut1On</find>
       <find>Mod1SB1Mode</find>
+      <find>int</find>
+      <find>section: verti</find>
+      <find>hyster</find>
+      <find>rampstate</find>
+      <find>scope</find>
+      <find>ScopeModuleControlMode</find>
+      <find>scopeModule</find>
+      <find>ScopeModuleAdvancedEnableCh1</find>
+      <find>ScopeModuleControlChannel1Min</find>
+      <find>ScopeModuleControlAverages</find>
+      <find>trigga</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Luka Drmić &lt;drmishello69@gmail.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
@@ -62,16 +89,18 @@
         <option value="$PROJECT_DIR$/ZIUHFLI/readme" />
         <option value="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" />
         <option value="$PROJECT_DIR$/HeavyMetalMagnet/AMI430.py" />
+        <option value="$USER_HOME$/AppData/Local/Continuum/anaconda3/envs/qcodes/Lib/site-packages/qcodes/instrument_drivers/ZI/ZIUHFLI.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py" />
         <option value="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" />
         <option value="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-15" />
-    <option name="y" value="200" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1054" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -91,6 +120,15 @@
               <item name="LabberDrivers" type="b2602c69:ProjectViewProjectNode" />
               <item name="LabberDrivers" type="462c0819:PsiDirectoryNode" />
               <item name="ZIUHFLI" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LabberDrivers" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
+            </path>
+            <path>
+              <item name="LabberDrivers" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
+              <item name="Scratches" type="d62648e6:ScratchProjectViewPane$MyRootNode" />
             </path>
           </expand>
           <select />
@@ -114,6 +152,78 @@
         </RuleState>
       </list>
     </option>
+  </component>
+  <component name="RunManager" selected="Python.Zurich Instruments UHF">
+    <configuration name="Zurich Instruments UHF" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LabberDrivers" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ZIUHFLI" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="example_awg" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LabberDrivers" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_awg.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="scratch_1" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="LabberDrivers" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.Zurich Instruments UHF" />
+        <item itemvalue="Python.scratch_1" />
+        <item itemvalue="Python.example_awg" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -140,19 +250,33 @@
       <option name="project" value="LOCAL" />
       <updated>1557938554709</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Update Ami430 2D driver">
+      <created>1558084670255</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1558084670255</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Update custom ZIUHFLI driver">
+      <created>1558084775128</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1558084775128</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14172813" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19020021" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32900432" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -170,20 +294,10 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add ZIUHFLI guide" />
     <MESSAGE value="Update Ami430 2D driver" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update Ami430 2D driver" />
+    <MESSAGE value="Update custom ZIUHFLI driver" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update custom ZIUHFLI driver" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/HeavyMetalMagnet/AMI430.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="847" column="11" selection-start-line="847" selection-start-column="11" selection-end-line="847" selection-end-column="11" />
-          <folding>
-            <element signature="e#966#2261#0" />
-            <element signature="e#2311#2544#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -205,22 +319,89 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini">
+    <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36/Lib/site-packages/zhinst/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="55">
-          <caret line="2794" column="20" lean-forward="true" selection-start-line="2794" selection-start-column="20" selection-end-line="2794" selection-end-column="20" />
+        <state relative-caret-position="1494">
+          <caret line="393" column="59" selection-start-line="393" selection-start-column="59" selection-end-line="393" selection-end-column="59" />
+          <folding>
+            <element signature="e#1007#6124#0" />
+            <element signature="e#6166#7360#0" />
+            <element signature="e#7436#9758#0" />
+            <element signature="e#9800#11567#0" />
+            <element signature="e#11592#12657#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_boxcar.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2320" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HeavyMetalMagnet/AMI430.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="842">
+          <caret line="373" column="42" selection-start-line="373" selection-start-column="42" selection-end-line="373" selection-end-column="42" />
+          <folding>
+            <element signature="e#966#2261#0" />
+            <element signature="e#2311#2544#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="19" column="23" lean-forward="true" selection-start-line="19" selection-start-column="23" selection-end-line="19" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_awg.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="986">
+          <caret line="259" column="30" selection-start-line="259" selection-start-column="30" selection-end-line="259" selection-end-column="30" />
+          <folding>
+            <element signature="e#227#264#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Continuum/anaconda3/envs/qcodes/Lib/site-packages/qcodes/instrument_drivers/ZI/ZIUHFLI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="986">
+          <caret line="694" selection-start-line="694" selection-end-line="694" />
+          <folding>
+            <element signature="e#729#4835#0" />
+            <element signature="e#4870#13362#0" />
+            <element signature="e#13398#27909#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HeavyMetalMagnet/AMi430_Magnet.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="360" column="20" selection-start-line="360" selection-start-column="20" selection-end-line="360" selection-end-column="20" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="102" column="43" selection-start-line="102" selection-start-column="43" selection-end-line="102" selection-end-column="43" />
+        <state relative-caret-position="119">
+          <caret line="71" column="24" lean-forward="true" selection-start-line="71" selection-start-column="24" selection-end-line="71" selection-end-column="24" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#520#2059#0" />
-            <element signature="e#2123#2191#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1241">
+          <caret line="133" column="15" lean-forward="true" selection-start-line="133" selection-start-column="15" selection-end-line="133" selection-end-column="15" />
         </state>
       </provider>
     </entry>
