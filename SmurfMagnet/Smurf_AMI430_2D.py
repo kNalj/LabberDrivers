@@ -390,6 +390,8 @@ class Driver(LabberDriver):
         self.pause_ramp(magnet_socket)
         self._send(magnet_socket, "CONF:FIELD:TARG {} ;".format(float(value)))
         self.start_ramping(magnet_socket)
+        while not self.is_ready_to_ramp(magnet_socket):
+            time.sleep(0.5)
         return True
 
     def set_set_point(self, magnet_socket, value):
