@@ -68,7 +68,11 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ['Out'+str(x+1)+'SigOut' + str(y+1) + 'On' for x in range(8) for y in range(2)] + \
                 ['Demod'+str(x+1)+'On' for x in range(8)] + \
                 ["LowPassFilter"+str(x+1)+"Sinc" for x in range(8)] + \
-                ["SigIn1Imp", "SigIn2Imp"]:
+                ["SigIn1Imp", "SigIn2Imp"] + \
+                ["OutputAmplitudes"+str(x+1)+"Value1Enable" for x in range(8)] + \
+                ["OutputAmplitudes"+str(x+1)+"Value2Enable" for x in range(8)] + \
+                ["SigOut1Imp", "SigOut2Imp"] + \
+                ["SigOut1Autorange", "SigOut2Autorange"]:
             self.ziConnection.setInt(str(quant.get_cmd % self.device), 1 if value else 0)
         # Simple floating points
         elif quant.name in ['SigIn1Range', 'SigIn2Range'] + \
@@ -88,7 +92,9 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ['Mod1SB1OutAmp', 'Mod2SB1OutAmp'] + \
                 ['Mod1SB2OutAmp', 'Mod2SB2OutAmp'] + \
                 ["LowPassFilter"+str(x+1)+"TC" for x in range(8)] + \
-                ["SigIn1Scaling", "SigIn2Scaling"]:
+                ["SigIn1Scaling", "SigIn2Scaling"] + \
+                ["OutputAmplitudes"+str(x+1)+"Value1" for x in range(8)] + \
+                ["OutputAmplitudes"+str(x+1)+"Value2" for x in range(8)]:
             self.ziConnection.setDouble(str(quant.get_cmd % self.device), float(value))
         # Combos (Oscillator-selector for demodulators and Modulator mode)
         elif quant.name in ['Demod'+str(x+1)+'Osc' for x in range(8)] + \
@@ -104,6 +110,8 @@ class Driver(InstrumentDriver.InstrumentWorker):
             self.ziConnection.setInt(str(quant.get_cmd % self.device), intValue)
         elif quant.name in ["SigIn1Autorange", "SigIn2Autorange"]:
             self.ziConnection.setInt(str(quant.get_cmd % self.device), 1)
+        elif quant.name in ["SigOut1Range", "SigOut2Range"]:
+            self.ziConnection.setDouble(str(quant.get_cmd % self.device), float(quant.getCmdStringFromValue(value)))
 
         # ############# BOOLEANS ################
         elif quant.name in ["ScopeModuleTrigEnable", "ScopeModuleTrigTriggerGatingEnable", "ScopeModuleSegmentsEnable",
@@ -143,6 +151,23 @@ class Driver(InstrumentDriver.InstrumentWorker):
             freq = values[self.ziConnection.getInt("/{}/scopes/0/time".format(self.device))]
             num_of_points = freq * value
             self.ziConnection.setDouble(str(quant.get_cmd) % self.device, float(num_of_points))
+
+        # ##################################################################
+        # ###################### ASYNC COMMANDS ############################
+        # ##################################################################
+
+        # INT COMBOS
+        elif quant.name in ["ScopeModuleControlMode"]:
+            if quant.name.startswith("ScopeModule"):
+                self.scope_module.set(str(quant.get_cmd), int(quant.getCmdStringFromValue(value)))
+
+        # SPECIALS
+        elif quant.name == "ScopeModuleAvgFilter":
+            if quant.getCmdStringFromValue(value) == 1:
+                self.scope_module.set("scopeModule/averager/weight", 1)
+                self.scope_module.set("scopeModule/averager/restart", 1)
+            else:
+                self.performGetValue(self.quantities["ScopeModuleControlAvgFilter"])
         return value
 
     def performGetValue(self, quant, options={}):
@@ -158,7 +183,10 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ['Out'+str(x+1)+'SigOut' + str(y+1) + 'On' for x in range(8) for y in range(2)] + \
                 ['Demod'+str(x+1)+'On' for x in range(8)] + \
                 ["LowPassFilter"+str(x+1)+"Sinc" for x in range(8)] + \
-                ["SigIn1Imp", "SigIn2Imp"]:
+                ["SigIn1Imp", "SigIn2Imp"] + \
+                ["OutputAmplitudes"+str(x+1)+"Value1Enable" for x in range(8)] + \
+                ["OutputAmplitudes"+str(x+1)+"Value2Enable" for x in range(8)] + \
+                ["SigOut1Imp", "SigOut2Imp"] + ["SigOut1Autorange", "SigOut2Autorange"]:
             return self.ziConnection.getInt(str(quant.get_cmd % self.device)) > 0
         # Simple floating points
         elif quant.name in ['SigIn1Range', 'SigIn2Range'] + \
@@ -178,7 +206,9 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ['Mod1SB1OutAmp', 'Mod2SB1OutAmp'] + \
                 ['Mod1SB2OutAmp', 'Mod2SB2OutAmp'] + \
                 ["LowPassFilter"+str(x+1)+"TC" for x in range(8)] + \
-                ["SigIn1Scaling", "SigIn2Scaling"]:
+                ["SigIn1Scaling", "SigIn2Scaling"] + \
+                ["OutputAmplitudes"+str(x+1)+"Value1" for x in range(8)] + \
+                ["OutputAmplitudes"+str(x+1)+"Value2" for x in range(8)]:
             return self.ziConnection.getDouble(str(quant.get_cmd % self.device))
         # Read-out channels of demodulator
         elif quant.name in ['Demod'+str(x+1)+'R' for x in range(8)] + \
@@ -265,6 +295,8 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ['Mod1SB2Osc', 'Mod2SB2Osc'] + \
                 ["LowPassFilter"+str(x+1)+"Order" for x in range(8)]:
             return quant.getValueFromCmdString(self.ziConnection.getInt(str(quant.get_cmd % self.device)))
+        if quant.name in ["SigOut1Range", "SigOut2Range"]:
+            return quant.getValueFromCmdString(self.ziConnection.getDouble(str(quant.get_cmd % self.device)))
         # for other quantities, just return current value of control
         # ############# INT COMBOS ################
         elif quant.name in ["ScopeModuleControlSamplingRate", "ScopeModuleTrigSlope", "ScopeModuleTrigHysteresisUnit",
@@ -308,8 +340,16 @@ class Driver(InstrumentDriver.InstrumentWorker):
             freq = values[self.ziConnection.getInt("/{}/scopes/0/time".format(self.device))]
             num_of_points = self.ziConnection.getDouble("/{}/scopes/0/length".format(self.device))
             value = num_of_points / freq
-            # value = change_to_duration(value)
             return value
+
+        # ############################################################################
+        # ############################# ASYNC COMMANDS ###############################
+        # ############################################################################
+
+        # INT COMBO BOXES
+        elif quant.name in ["ScopeModuleControlMode"]:
+            if quant.name.startswith("ScopeModule"):
+                return quant.getValueFromCmdString(self.scope_module.getInt(str(quant.get_cmd)))
         return quant.getValue()
 
 
