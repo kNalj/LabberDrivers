@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2fed8941-572c-4053-a356-ab15a1845f81" name="Default Changelist" comment="Version 2 driver">
-      <change afterPath="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.py" afterDir="false" />
+    <list default="true" id="2fed8941-572c-4053-a356-ab15a1845f81" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini" beforeDir="false" afterPath="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.py" beforeDir="false" afterPath="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,22 +17,22 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
+          <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="476">
-                  <caret line="28" selection-start-line="28" selection-end-line="28" />
+                <state relative-caret-position="865">
+                  <caret line="65" column="3" lean-forward="true" selection-start-line="65" selection-end-line="66" />
                 </state>
               </provider>
             </entry>
           </file>
-          <file pinned="false" current-in-tab="true">
+          <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="488">
-                  <caret line="72" lean-forward="true" selection-start-line="72" selection-end-line="72" />
+                <state relative-caret-position="119">
+                  <caret line="7" column="27" lean-forward="true" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
                   <folding>
-                    <element signature="e#0#23#0" expanded="true" />
+                    <element signature="e#23#36#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -43,21 +41,18 @@
         </leaf>
       </split-first>
       <split-second>
-        <leaf>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-436">
-                  <caret line="242" column="52" lean-forward="true" selection-start-line="242" selection-start-column="52" selection-end-line="242" selection-end-column="52" />
+                <state relative-caret-position="1126">
+                  <caret line="315" column="58" lean-forward="true" selection-start-line="315" selection-start-column="58" selection-end-line="315" selection-end-column="58" />
                   <folding>
                     <element signature="e#23#41#0" expanded="true" />
                     <element signature="e#745#1646#0" />
                     <element signature="e#1696#1892#0" />
-                    <element signature="e#1974#3832#0" />
                     <element signature="e#3892#5362#0" />
-                    <element signature="e#5611#6317#0" />
-                    <element signature="e#6366#7069#0" />
-                    <element signature="e#7123#8013#0" />
+                    <element signature="e#8215#9628#0" />
                     <element signature="e#9682#10120#0" />
                     <element signature="e#10171#10623#0" />
                     <element signature="e#10676#11141#0" />
@@ -66,21 +61,6 @@
                     <element signature="e#12317#13045#0" />
                     <element signature="e#13099#13603#0" />
                     <element signature="e#13684#14477#0" />
-                    <element signature="e#14527#15036#0" />
-                    <element signature="e#15902#16011#0" />
-                    <element signature="e#16065#16668#0" />
-                    <element signature="e#16720#17196#0" />
-                    <element signature="e#17255#17949#0" />
-                    <element signature="e#17999#18478#0" />
-                    <element signature="e#18535#19054#0" />
-                    <element signature="e#19105#19582#0" />
-                    <element signature="e#19635#20065#0" />
-                    <element signature="e#20120#20618#0" />
-                    <element signature="e#20680#23112#0" />
-                    <element signature="e#23801#24289#0" />
-                    <element signature="e#24339#24509#0" />
-                    <element signature="e#24542#24753#0" />
-                    <element signature="e#24793#25426#0" />
                   </folding>
                 </state>
               </provider>
@@ -89,8 +69,17 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.ini.ini">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="323">
-                  <caret line="268" column="29" lean-forward="true" selection-start-line="268" selection-start-column="29" selection-end-line="268" selection-end-column="29" />
+                <state relative-caret-position="2601">
+                  <caret line="153" column="28" selection-start-line="153" selection-start-column="28" selection-end-line="153" selection-end-column="28" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_4.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="170">
+                  <caret line="10" column="38" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
                 </state>
               </provider>
             </entry>
@@ -134,10 +123,10 @@
         <option value="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" />
         <option value="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" />
         <option value="$PROJECT_DIR$/VariableAttenuator/Zurich Instruments UHF.ini" />
-        <option value="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini" />
+        <option value="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch_4.py" />
         <option value="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.py" />
-        <option value="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" />
+        <option value="$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini" />
       </list>
     </option>
   </component>
@@ -153,7 +142,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -174,6 +162,11 @@
             <path>
               <item name="LabberDrivers" type="b2602c69:ProjectViewProjectNode" />
               <item name="LabberDrivers" type="462c0819:PsiDirectoryNode" />
+              <item name="VariableAttenuator" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LabberDrivers" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LabberDrivers" type="462c0819:PsiDirectoryNode" />
               <item name="ZIUHFLI" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -189,6 +182,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -215,7 +209,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.VariableAttenuator">
+  <component name="RunManager" selected="Python.scratch_4">
     <configuration name="VariableAttenuator" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="LabberDrivers" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -323,8 +317,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.VariableAttenuator" />
         <item itemvalue="Python.scratch_4" />
+        <item itemvalue="Python.VariableAttenuator" />
         <item itemvalue="Python.Zurich Instruments UHF" />
         <item itemvalue="Python.scratch_1" />
         <item itemvalue="Python.example_awg" />
@@ -384,19 +378,32 @@
       <option name="project" value="LOCAL" />
       <updated>1559814980571</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Fix Labber not waiting for ramping to finish when changing field.">
+      <created>1564065431744</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1564065431744</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Update ZIUHFLI drivers">
+      <created>1564065465623</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1564065465623</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19020021" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.27272728" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.27272728" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -416,7 +423,9 @@
     <MESSAGE value="Update Ami430 2D driver" />
     <MESSAGE value="Update custom ZIUHFLI driver" />
     <MESSAGE value="Version 2 driver" />
-    <option name="LAST_COMMIT_MESSAGE" value="Version 2 driver" />
+    <MESSAGE value="Fix Labber not waiting for ramping to finish when changing field." />
+    <MESSAGE value="Update ZIUHFLI drivers" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update ZIUHFLI drivers" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/ZIUHFLI/readme">
@@ -522,23 +531,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_4.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" lean-forward="true" selection-start-line="13" selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-119">
+        <state relative-caret-position="-2023">
           <caret line="11" column="57" selection-start-line="11" selection-start-column="57" selection-end-line="11" selection-end-column="57" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
@@ -547,36 +542,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.py">
+    <entry file="file://$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.ini.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="488">
-          <caret line="72" lean-forward="true" selection-start-line="72" selection-end-line="72" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="2601">
+          <caret line="153" column="28" selection-start-line="153" selection-start-column="28" selection-end-line="153" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.ini.ini">
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch_4.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="268" column="29" lean-forward="true" selection-start-line="268" selection-start-column="29" selection-end-line="268" selection-end-column="29" />
+        <state relative-caret-position="170">
+          <caret line="10" column="38" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-436">
-          <caret line="242" column="52" lean-forward="true" selection-start-line="242" selection-start-column="52" selection-end-line="242" selection-end-column="52" />
+        <state relative-caret-position="1126">
+          <caret line="315" column="58" lean-forward="true" selection-start-line="315" selection-start-column="58" selection-end-line="315" selection-end-column="58" />
           <folding>
             <element signature="e#23#41#0" expanded="true" />
             <element signature="e#745#1646#0" />
             <element signature="e#1696#1892#0" />
-            <element signature="e#1974#3832#0" />
             <element signature="e#3892#5362#0" />
-            <element signature="e#5611#6317#0" />
-            <element signature="e#6366#7069#0" />
-            <element signature="e#7123#8013#0" />
+            <element signature="e#8215#9628#0" />
             <element signature="e#9682#10120#0" />
             <element signature="e#10171#10623#0" />
             <element signature="e#10676#11141#0" />
@@ -585,22 +574,24 @@
             <element signature="e#12317#13045#0" />
             <element signature="e#13099#13603#0" />
             <element signature="e#13684#14477#0" />
-            <element signature="e#14527#15036#0" />
-            <element signature="e#15902#16011#0" />
-            <element signature="e#16065#16668#0" />
-            <element signature="e#16720#17196#0" />
-            <element signature="e#17255#17949#0" />
-            <element signature="e#17999#18478#0" />
-            <element signature="e#18535#19054#0" />
-            <element signature="e#19105#19582#0" />
-            <element signature="e#19635#20065#0" />
-            <element signature="e#20120#20618#0" />
-            <element signature="e#20680#23112#0" />
-            <element signature="e#23801#24289#0" />
-            <element signature="e#24339#24509#0" />
-            <element signature="e#24542#24753#0" />
-            <element signature="e#24793#25426#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="27" lean-forward="true" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
+          <folding>
+            <element signature="e#23#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VariableAttenuator/VariableAttenuator.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="865">
+          <caret line="65" column="3" lean-forward="true" selection-start-line="65" selection-end-line="66" />
         </state>
       </provider>
     </entry>

@@ -1,12 +1,15 @@
-import InstrumentDriver
+#!/usr/bin/env python
+
 import socket
+import time
+from BaseDriver import LabberDriver
 
 
-class Driver(InstrumentDriver):
+class Driver(LabberDriver):
     """
 
     """
-    address = ""
+    address = "10.21.42.129"
     port = 23
     buffer_size = 512
 
@@ -19,22 +22,43 @@ class Driver(InstrumentDriver):
         """
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.socket.connect(self.address, self.port)
+            self.socket.connect((self.address, self.port))
         except Exception as e:
             self.getValueFromUserDialog(value="Don't put anything here", text=str(e), title="Burn after reading")
         else:
             self._receive()
-        return
 
-    def preformClose(self, bError=False, options={}):
+    def performClose(self, options={}):
         """
 
-        :param bError:
         :param options:
         :return:
         """
 
         self.socket.close()
+
+    def performSetValue(self, quant, value, sweepRate=0.0, options={}):
+        """
+
+        :param quant:
+        :param value:
+        :param sweepRate:
+        :param options:
+        :return:
+        """
+        if quant.name == "Attenuation":
+            self.set_attenuation(value)
+        return value
+
+    def performGetValue(self, quant, options={}):
+        """
+
+        :param quant:
+        :param options:
+        :return:
+        """
+        if quant.name == "Attenuation":
+            return self.get_attenuation()
 
     def _send(self, command):
         """
@@ -43,6 +67,7 @@ class Driver(InstrumentDriver):
         :return:
         """
         self.socket.send(str.encode(command + "\r\n"))
+        time.sleep(0.6)
         return
 
     def _receive(self):
@@ -61,16 +86,22 @@ class Driver(InstrumentDriver):
         self._send(command)
         return self._receive()
 
-    def performSetValue(self, quant, value, sweepRate=0.0, options={}):
+    def set_attenuation(self, value):
         """
 
-        :param quant:
         :param value:
-        :param sweepRate:
-        :param options:
         :return:
         """
+        self._send(":SETATT={}".format(float(value)))
+        self._receive()
+        return value
 
+    def get_attenuation(self):
+        """
+
+        :return:
+        """
+        return float(self._ask(":ATT?"))
 
 
 def main():
