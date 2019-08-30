@@ -3,11 +3,6 @@ import numpy as np
 import os, sys, inspect, re, math
 import zhinst.utils as zi
 
-
-from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem, QShortcut
-from PyQt5 import QtGui
-from PyQt5.QtCore import Qt
-
 #Some stuff to import ziPython from a relative path independent from system wide installations
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
 if cmd_folder not in sys.path:
