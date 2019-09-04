@@ -307,11 +307,13 @@ class Driver(InstrumentDriver.InstrumentWorker):
                             "ScopeModuleControlChannel1Max", "ScopeModuleControlChannel2Min",
                             "ScopeModuleControlChannel2Max", "ScopeModuleTrigLevel", "ScopeModuleTrigHysteresisVoltage",
                             "ScopeModuleTrigHysteresisPercentage"]:
+            self.ziConnection.sync()
             return self.ziConnection.getDouble(str(quant.get_cmd % self.device))
         # ############# BOOLEANS ################
         elif quant.name in ["ScopeModuleTrigEnable", "ScopeModuleTrigTriggerGatingEnable", "ScopeModuleSegmentsEnable",
                             "ScopeModuleAdvancedBWLimitCh1", "ScopeModuleAdvancedBWLimitCh2",
                             "ScopeModuleAdvancedEnableCh1", "ScopeModuleAdvancedEnableCh2"]:
+            self.ziConnection.sync()
             return self.ziConnection.getInt(str(quant.get_cmd % self.device)) > 0
         # ############# SPECIAL ################
         elif quant.name in ["LowPassFilter" + str(x+1) + "Bw3db" for x in range(8)]:
@@ -335,6 +337,7 @@ class Driver(InstrumentDriver.InstrumentWorker):
             freq = values[self.ziConnection.getInt("/{}/scopes/0/time".format(self.device))]
             num_of_points = self.ziConnection.getDouble("/{}/scopes/0/length".format(self.device))
             value = num_of_points / freq
+            self.ziConnection.sync()
             return value
 
         # ############################################################################

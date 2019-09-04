@@ -64,15 +64,14 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ["Demod" + str(i+1) + "Enable" for i in range(4)] + \
                 ["Demod" + str(i+1) + "PhaseAdjust" for i in range(4)] + \
                 ["Demod" + str(i+1) + "SincFilter" for i in range(4)] + \
+                ["Demod" + str(i + 1) + "On" for i in range(4)] + \
                 ["OutAmp" + str(i+1) + "Enable" for i in range(4)] + \
                 ["SigOut1Enable", "SigOut1Imp50", "SigOut1Autorange", "SigOut1Add", "SigOut1Diff"]:
             self.ziConnection.setInt(str(quant.get_cmd % self.device), 1 if value else 0)
         # ############# INT COMBOS ################
         elif quant.name in ["Demod" + str(i+1) + "Osc" for i in range(4)] + \
                 ["Demod" + str(i+1) + "Signal" for i in range(4)] + \
-                ["Demod" + str(i+1) + "Order" for i in range(4)] + \
-                ["Demod" + str(i+1) + "TC" for i in range(4)] + \
-                ["Demod" + str(i+1) + "Rate" for i in range(4)]:
+                ["Demod" + str(i+1) + "Order" for i in range(4)]:
             self.ziConnection.setInt(str(quant.get_cmd % self.device), int(quant.getCmdStringFromValue(value)))
         elif quant.name in ["SigOut1Range"]:
             self.ziConnection.setDouble(str(quant.get_cmd % self.device), float(quant.getCmdStringFromValue(value)))
@@ -80,8 +79,9 @@ class Driver(InstrumentDriver.InstrumentWorker):
         elif quant.name in ["SigIn1VoltageRange", "SigIn1VoltageScaling", "SigIn1CurrentRange", "SigIn1CurrentScaling"] + \
                 ["Oscillator" + str(i+1) + "Frequency" for i in range(4)] + \
                 ["Demod" + str(i+1) + "Harm" for i in range(4)] + \
-                ["Demod" + str(i+1) + "Freq" for i in range(4)] + \
                 ["Demod" + str(i+1) + "Phase" for i in range(4)] + \
+                ["Demod" + str(i+1) + "TC" for i in range(4)] + \
+                ["Demod" + str(i+1) + "Rate" for i in range(4)] + \
                 ["OutAmp" + str(i+1) + "VpkValue" for i in range(4)] + \
                 ["SigOut1Offset"]:
             self.ziConnection.setDouble(str(quant.get_cmd % self.device), float(value))
@@ -124,6 +124,7 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ["Demod" + str(i + 1) + "Enable" for i in range(4)] + \
                 ["Demod" + str(i + 1) + "PhaseAdjust" for i in range(4)] + \
                 ["Demod" + str(i + 1) + "SincFilter" for i in range(4)] + \
+                ["Demod" + str(i + 1) + "On" for i in range(4)] + \
                 ["OutAmp" + str(i + 1) + "Enable" for i in range(4)] + \
                 ["SigOut1Enable", "SigOut1Imp50", "SigOut1Autorange", "SigOut1Add", "SigOut1Diff"]:
             return self.ziConnection.getInt(str(quant.get_cmd % self.device)) > 0
@@ -131,9 +132,7 @@ class Driver(InstrumentDriver.InstrumentWorker):
             # ### INT ###
         elif quant.name in ["Demod" + str(i+1) + "Osc" for i in range(4)] + \
                 ["Demod" + str(i + 1) + "Signal" for i in range(4)] + \
-                ["Demod" + str(i + 1) + "Order" for i in range(4)] + \
-                ["Demod" + str(i + 1) + "TC" for i in range(4)] + \
-                ["Demod" + str(i + 1) + "Rate" for i in range(4)]:
+                ["Demod" + str(i + 1) + "Order" for i in range(4)]:
             return quant.getValueFromCmdString(self.ziConnection.getInt(str(quant.get_cmd % self.device)))
             # ### DOUBLE ###
         elif quant.name in ["SigOut1Range"]:
@@ -144,13 +143,16 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ["Demod" + str(i + 1) + "Harm" for i in range(4)] + \
                 ["Demod" + str(i + 1) + "Freq" for i in range(4)] + \
                 ["Demod" + str(i + 1) + "Phase" for i in range(4)] + \
+                ["Demod" + str(i + 1) + "TC" for i in range(4)] + \
+                ["Demod" + str(i + 1) + "Rate" for i in range(4)] + \
+                ["Demod" + str(i + 1) + "SamplingRate" for i in range(4)] + \
                 ["OutAmp" + str(i+1) + "VpkValue" for i in range(4)] + \
                 ["SigOut1Offset"]:
             return self.ziConnection.getDouble(str(quant.get_cmd % self.device))
 
         # ############# SPECIAL ################
         elif quant.name in ["Demod" + str(i+1) + "Mode" for i in range(4)]:
-            enabled = self.ziConnection.getInt(quant.get_cmd % (self.device, "enabled"))
+            enabled = self.ziConnection.getInt(quant.get_cmd % (self.device, "enable"))
             automode = self.ziConnection.getInt(quant.get_cmd % (self.device, "automode"))
 
             if enabled == 0:
@@ -175,12 +177,81 @@ class Driver(InstrumentDriver.InstrumentWorker):
             return value
         elif quant.name in ["OutAmp1VrmsValue"]:
             return self.ziConnection.getDouble(quant.get_cmd % self.device) / math.sqrt(2)
+
+        # ############# Read-out channels of demods ################
+        elif quant.name in ['Demod' + str(x + 1) + 'R' for x in range(4)] + \
+                 ['Demod' + str(x + 1) + 'phi' for x in range(4)] + \
+                 ['Demod' + str(x + 1) + 'X' for x in range(4)] + \
+                 ['Demod' + str(x + 1) + 'Y' for x in range(4)]:
+            method = self.getValue("DAQMethod")
+            if method == "getSample()":
+                return self.performGetSample(quant)
+            elif method == "poll()":
+                return self.performPoll(quant)
+
         # ############################################################################
         # ############################# ASYNC COMMANDS ###############################
         # ############################################################################
 
         # COMBO BOXES
         return quant.getValue()
+
+    def performGetSample(self, quant):
+        """
+
+
+        :param quant: Quantity that we want to get
+        :return: Last obtained value of the specified quantity
+        """
+        if quant.get_cmd in self.resultBuffer.keys():
+            data = self.resultBuffer[quant.get_cmd]
+        else:
+            data = self.ziConnection.getSample(str(quant.get_cmd % self.device))
+            self.resultBuffer[quant.get_cmd] = data
+        channel = quant.name[6:]
+        if channel == "X":
+            return data["x"][0]
+        elif channel == "Y":
+            return data["y"][0]
+        elif channel == "R":
+            return math.sqrt(data["x"][0] ** 2 + data["y"][0] ** 2)
+        elif channel == "phi":
+            return math.degrees(math.atan2(data["y"][0], data["x"][0]))
+        return float('nan')
+
+    def performPoll(self, quant):
+        """
+        Method that subscribes to a certain node of ZIMFLI. Gets the data over time (and at a rate) specified in the
+        user interface. Since the method subscribes to a whole node (example: demod 3) data for a specified quantity
+        (such as X, Y, R, phi) needs to be extracted from the result, and averaged to get just one value as a return
+        value.
+
+        :param quant: Quantity being subscribed to and polled
+        :return: Average of all the polled data
+        """
+        rate = self.getValue(quant.name[:6] + "SamplingRate")
+        self.sendValueToOther(quant.name[:6] + "SamplingRate", rate)
+        recording_time = self.getValue("PollRecordingTime")
+        timeout = self.getValue("PollTimeout")
+        self.ziConnection.subscribe(quant.get_cmd % self.device)
+        self.ziConnection.sync()
+        data = self.ziConnection.poll(recording_time, int(timeout), 0, True)
+
+        channel = quant.name[6:]
+        if channel == "X":
+            return np.average(data[quant.get_cmd % self.device]["x"])
+        elif channel == "Y":
+            return np.average(data[quant.get_cmd % self.device]["y"])
+        elif channel == "R":
+            return math.sqrt(
+                np.average(data[quant.get_cmd % self.device]["x"]) ** 2 +
+                np.average(data[quant.get_cmd % self.device]["y"]) ** 2
+            )
+        elif channel == "phi":
+            return math.degrees(math.atan2(np.average(data[quant.get_cmd % self.device]["x"]),
+                                           np.average(data[quant.get_cmd % self.device]["y"])))
+
+        return 45.0
 
 
 if __name__ == "__main__":

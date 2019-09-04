@@ -28,19 +28,13 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
-  </component>
   <component name="ProjectId" id="1Q0Z7HGqDa1nWfJ74hz9V1zdb4p" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/ZIMFLI" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -258,7 +252,14 @@
       <option name="project" value="LOCAL" />
       <updated>1567011207778</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Add core ZIMFLI functionalities">
+      <created>1567179158716</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1567179158716</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -283,6 +284,7 @@
     <MESSAGE value="Update ZIUHFLI drivers" />
     <MESSAGE value="Updates" />
     <MESSAGE value="Add ZIMFLI driver" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add ZIMFLI driver" />
+    <MESSAGE value="Add core ZIMFLI functionalities" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add core ZIMFLI functionalities" />
   </component>
 </project>
