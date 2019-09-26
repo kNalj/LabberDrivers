@@ -686,7 +686,7 @@ class Driver(LabberDriver):
         # Restart treshold should be at 0.9 (for testing purposes it is changed to whatever number i find suitable)
         restart_all_threshold = 2.8  # When the field falls to 90% of max value, restart ramping
         # Stop treshold should be at 0.95 (for testing purposes it is changed to whatever number i find suitable)
-        stop_threshold = 2.85  # When the field reaches close to 1 Tesla, stop magnets that are increasing it
+        stop_threshold = 2.85  # When the field reaches close to 3 Tesla, stop magnets that are increasing it
         z = self.get_field(self.z_magnet_socket)
         y = self.get_field(self.y_magnet_socket)
         radius, phi = self.cartesian_to_polar(z, y)
@@ -725,7 +725,7 @@ class Driver(LabberDriver):
             radius, phi = self.cartesian_to_polar(z, y)
             self.reportStatus("Y: {}, Z: {}".format(y, z))
 
-            # Radius should never be more then 1T ( can be adjusted to anz other value for testing purposes)
+            # Radius should never be more then 3T ( can be adjusted to any other value for testing purposes)
             if radius > 2.9:
                 self.pause_ramp(self.z_magnet_socket)
                 self.pause_ramp(self.y_magnet_socket)

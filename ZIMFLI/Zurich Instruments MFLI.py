@@ -2,6 +2,7 @@ import InstrumentDriver
 import numpy as np
 import os, sys, inspect, re, math
 import zhinst.utils as zi
+import time
 
 #Some stuff to import ziPython from a relative path independent from system wide installations
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
@@ -161,12 +162,12 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 return quant.getValueFromCmdString(automode)
 
         elif quant.name in ["LowPassFilter" + str(x + 1) + "Bw3db" for x in range(8)]:
-                order_cmd = "/{}/demods/{}/order".format(self.device, str(int(quant.name[13]) - 1))
-                order = self.ziConnection.getDouble(str(order_cmd))
-                tc_cmd = "/{}/demods/{}/timeconstant".format(self.device, str(int(quant.name[13]) - 1))
-                tc = self.ziConnection.getDouble(str(tc_cmd))
-                value = zi.tc2bw(tc, order)
-                return value
+            order_cmd = "/{}/demods/{}/order".format(self.device, str(int(quant.name[13]) - 1))
+            order = self.ziConnection.getDouble(str(order_cmd))
+            tc_cmd = "/{}/demods/{}/timeconstant".format(self.device, str(int(quant.name[13]) - 1))
+            tc = self.ziConnection.getDouble(str(tc_cmd))
+            value = zi.tc2bw(tc, order)
+            return value
         elif quant.name in ["LowPassFilter" + str(x + 1) + "BwNep" for x in range(8)]:
             quotes = {1: 0.2500, 2: 0.1250, 3: 0.0938, 4: 0.0781, 5: 0.0684, 6: 0.0615, 7: 0.0564, 8: 0.0524}
             order_cmd = "/{}/demods/{}/order".format(self.device, str(int(quant.name[13]) - 1))
@@ -187,7 +188,7 @@ class Driver(InstrumentDriver.InstrumentWorker):
             if method == "getSample()":
                 return self.performGetSample(quant)
             elif method == "poll()":
-                return self.performPoll(quant)
+                return self.performPoll(quant, options)
 
         # ############################################################################
         # ############################# ASYNC COMMANDS ###############################
@@ -219,23 +220,29 @@ class Driver(InstrumentDriver.InstrumentWorker):
             return math.degrees(math.atan2(data["y"][0], data["x"][0]))
         return float('nan')
 
-    def performPoll(self, quant):
+    def performPoll(self, quant, options):
         """
         Method that subscribes to a certain node of ZIMFLI. Gets the data over time (and at a rate) specified in the
         user interface. Since the method subscribes to a whole node (example: demod 3) data for a specified quantity
-        (such as X, Y, R, phi) needs to be extracted from the result, and averaged to get just one value as a return
+        (such as X, Y, R, phi) needs to be extracted from the result, and averaged to get just one number as a return
         value.
 
         :param quant: Quantity being subscribed to and polled
         :return: Average of all the polled data
         """
-        rate = self.getValue(quant.name[:6] + "SamplingRate")
-        self.sendValueToOther(quant.name[:6] + "SamplingRate", rate)
-        recording_time = self.getValue("PollRecordingTime")
-        timeout = self.getValue("PollTimeout")
-        self.ziConnection.subscribe(quant.get_cmd % self.device)
-        self.ziConnection.sync()
-        data = self.ziConnection.poll(recording_time, int(timeout), 0, True)
+
+        if quant.get_cmd % self.device in self.resultBuffer.keys():
+            data = self.resultBuffer[quant.get_cmd % self.device]
+        else:
+            rate = self.getValue(quant.name[:6] + "SamplingRate")
+            self.sendValueToOther(quant.name[:6] + "SamplingRate", rate)
+            recording_time = self.getValue("PollRecordingTime")
+            timeout = self.getValue("PollTimeout")
+            self.ziConnection.subscribe(quant.get_cmd % self.device)
+            self.ziConnection.sync()
+            time.sleep(0.005)  # Make sleep depend on recording time
+            data = self.ziConnection.poll(recording_time, int(timeout), 0, True)
+            self.resultBuffer[quant.get_cmd % self.device] = data
 
         channel = quant.name[6:]
         if channel == "X":
@@ -244,8 +251,7 @@ class Driver(InstrumentDriver.InstrumentWorker):
             return np.average(data[quant.get_cmd % self.device]["y"])
         elif channel == "R":
             return math.sqrt(
-                np.average(data[quant.get_cmd % self.device]["x"]) ** 2 +
-                np.average(data[quant.get_cmd % self.device]["y"]) ** 2
+                np.average(data[quant.get_cmd % self.device]["x"]) ** 2 + np.average(data[quant.get_cmd % self.device]["y"]) ** 2
             )
         elif channel == "phi":
             return math.degrees(math.atan2(np.average(data[quant.get_cmd % self.device]["x"]),
