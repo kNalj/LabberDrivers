@@ -2,6 +2,7 @@ import InstrumentDriver
 import numpy as np
 import os, sys, inspect, re, math
 import zhinst.utils as zi
+import time
 
 #Some stuff to import ziPython from a relative path independent from system wide installations
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
@@ -210,21 +211,11 @@ class Driver(InstrumentDriver.InstrumentWorker):
                 ['Demod'+str(x+1)+'phi' for x in range(8)] + \
                 ['Demod'+str(x+1)+'X' for x in range(8)] + \
                 ['Demod'+str(x+1)+'Y' for x in range(8)]:
-            if quant.get_cmd in self.resultBuffer.keys():
-                data = self.resultBuffer[quant.get_cmd]
-            else:
-                data = self.ziConnection.getSample(str(quant.get_cmd % self.device))
-                self.resultBuffer[quant.get_cmd] = data
-            channel = quant.name[6:]
-            if channel == "X":
-                return data["x"][0]
-            elif channel == "Y":
-                return data["y"][0]
-            elif channel == "R":
-                return math.sqrt(data["x"][0]**2 + data["y"][0]**2)
-            elif channel == "phi":
-                return math.degrees(math.atan2(data["y"][0], data["x"][0]))
-            return float('nan')
+            method = self.getValue("DAQMethod")
+            if method == "getSample()":
+                return self.performGetSample(quant)
+            elif method == "poll()":
+                return self.performPoll(quant, options)
         # Trace channels of demodulator
         elif quant.name in ['TraceDemod'+str(x+1)+'R' for x in range(8)] + \
                         ['TraceDemod'+str(x+1)+'phi' for x in range(8)] + \
@@ -349,6 +340,62 @@ class Driver(InstrumentDriver.InstrumentWorker):
             if quant.name.startswith("ScopeModule"):
                 return quant.getValueFromCmdString(self.scope_module.getInt(str(quant.get_cmd)))
         return quant.getValue()
+
+    def performGetSample(self, quant):
+        """
+
+        :param quant:
+        :return:
+        """
+        if quant.get_cmd in self.resultBuffer.keys():
+            data = self.resultBuffer[quant.get_cmd]
+        else:
+            data = self.ziConnection.getSample(str(quant.get_cmd % self.device))
+            self.resultBuffer[quant.get_cmd] = data
+        channel = quant.name[6:]
+        if channel == "X":
+            return data["x"][0]
+        elif channel == "Y":
+            return data["y"][0]
+        elif channel == "R":
+            return math.sqrt(data["x"][0] ** 2 + data["y"][0] ** 2)
+        elif channel == "phi":
+            return math.degrees(math.atan2(data["y"][0], data["x"][0]))
+        return float('nan')
+
+    def performPoll(self, quant):
+        """
+
+        :param quant:
+        :return:
+        """
+        if quant.get_cmd % self.device in self.resultBuffer.keys():
+            data = self.resultBuffer[quant.get_cmd % self.device]
+        else:
+            rate = self.getValue(quant.name[:6] + "SamplingRate")
+            self.sendValueToOther(quant.name[:6] + "SamplingRate", rate)
+            recording_time = self.getValue("PollRecordingTime")
+            timeout = self.getValue("PollTimeout")
+            self.ziConnection.subscribe(quant.get_cmd % self.device)
+            self.ziConnection.sync()
+            time.sleep(0.005)  # Make sleep depend on recording time
+            data = self.ziConnection.poll(recording_time, int(timeout), 0, True)
+            self.resultBuffer[quant.get_cmd % self.device] = data
+
+        channel = quant.name[6:]
+        if channel == "X":
+            return np.average(data[quant.get_cmd % self.device]["x"])
+        elif channel == "Y":
+            return np.average(data[quant.get_cmd % self.device]["y"])
+        elif channel == "R":
+            return math.sqrt(
+                np.average(data[quant.get_cmd % self.device]["x"]) ** 2 + np.average(data[quant.get_cmd % self.device]["y"]) ** 2
+            )
+        elif channel == "phi":
+            return math.degrees(math.atan2(np.average(data[quant.get_cmd % self.device]["x"]),
+                                           np.average(data[quant.get_cmd % self.device]["y"])))
+
+        return 45.0
 
 
 if __name__ == "__main__":

@@ -2,10 +2,143 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2fed8941-572c-4053-a356-ab15a1845f81" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/Zurich Instruments HDAWG.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/Zurich Instruments HDAWG.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_autoranging_impedance.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_connect.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_connect_config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_data_acquisition_continuous.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_data_acquisition_edge.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_data_acquisition_edge_fft.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_data_acquisition_grid.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_data_acquisition_trackingedge.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_multidevice_data_acquisition.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_multidevice_sweep.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_pid_advisor_pll.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_poll.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_poll_impedance.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_save_device_settings_expert.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_save_device_settings_simple.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_scope.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_scope_dig_dualchannel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_scope_dig_segmented.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_scope_dig_stream.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/common/example_sweeper.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/deprecated/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/deprecated/example_spectrum.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/deprecated/example_swtrigger_edge.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/deprecated/example_swtrigger_grid.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/deprecated/example_swtrigger_grid_average.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/deprecated/example_swtrigger_trackingedge.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/hdawg/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/hdawg/example_awg.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/hdawg/example_awg_sourcefile.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/hdawg/example_precompensation_curve_fit.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/hf2/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/hf2/example_pid_advisor_pll.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/hf2/example_scope.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhf/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhf/example_awg.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhf/example_awg_sourcefile.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhf/example_boxcar.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhfqa/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhfqa/common.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhfqa/example_delay.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhfqa/example_monitor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhfqa/example_result.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/examples/uhfqa/example_threshold.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIHDAWG/zhinst/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hdawg/example_precompensation_curve_fit.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhfqa/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhfqa/common.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhfqa/example_delay.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhfqa/example_monitor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhfqa/example_result.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhfqa/example_threshold.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hdawg/example_precompensation_curve_fit.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhfqa/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhfqa/common.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhfqa/example_delay.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhfqa/example_monitor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhfqa/example_result.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhfqa/example_threshold.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" beforeDir="false" afterPath="$PROJECT_DIR$/SmurfMagnet/Smurf_AMI430_2D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ZIMFLI/Zurich Instrument MFLI.ini" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/Zurich Instrument MFLI.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ZIMFLI/Zurich Instruments MFLI.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/Zurich Instruments MFLI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_connect.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_connect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_connect_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_connect_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_continuous.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_continuous.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_edge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_edge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_edge_fft.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_edge_fft.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_grid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_trackingedge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_data_acquisition_trackingedge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_multidevice_data_acquisition.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_multidevice_data_acquisition.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_multidevice_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_multidevice_sweep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_pid_advisor_pll.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_pid_advisor_pll.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_poll.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_poll.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_poll_impedance.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_poll_impedance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_save_device_settings_expert.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_save_device_settings_expert.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_save_device_settings_simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_save_device_settings_simple.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope_dig_dualchannel.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope_dig_dualchannel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope_dig_segmented.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope_dig_segmented.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope_dig_stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_scope_dig_stream.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_sweeper.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/common/example_sweeper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_spectrum.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_spectrum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_edge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_edge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_grid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_grid_average.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_grid_average.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_trackingedge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/deprecated/example_swtrigger_trackingedge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hdawg/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hdawg/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hdawg/example_awg.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hdawg/example_awg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hdawg/example_awg_sourcefile.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hdawg/example_awg_sourcefile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hf2/example_pid_advisor_pll.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hf2/example_pid_advisor_pll.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hf2/example_scope.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/hf2/example_scope.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhf/example_awg.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhf/example_awg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhf/example_awg_sourcefile.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhf/example_awg_sourcefile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhf/example_boxcar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/examples/uhf/example_boxcar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIMFLI/zhinst/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIMFLI/zhinst/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/Zurich Instruments UHF.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_connect.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_connect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_connect_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_connect_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_continuous.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_continuous.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_edge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_edge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_edge_fft.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_edge_fft.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_grid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_trackingedge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_data_acquisition_trackingedge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_multidevice_data_acquisition.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_multidevice_data_acquisition.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_multidevice_sweep.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_multidevice_sweep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_pid_advisor_pll.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_pid_advisor_pll.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_poll.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_poll.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_poll_impedance.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_poll_impedance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_save_device_settings_expert.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_save_device_settings_expert.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_save_device_settings_simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_save_device_settings_simple.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope_dig_dualchannel.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope_dig_dualchannel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope_dig_segmented.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope_dig_segmented.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope_dig_stream.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_scope_dig_stream.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_sweeper.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/common/example_sweeper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_spectrum.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_spectrum.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_edge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_edge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_grid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_grid_average.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_grid_average.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_trackingedge.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/deprecated/example_swtrigger_trackingedge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hdawg/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hdawg/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hdawg/example_awg.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hdawg/example_awg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hdawg/example_awg_sourcefile.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hdawg/example_awg_sourcefile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hf2/example_pid_advisor_pll.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hf2/example_pid_advisor_pll.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hf2/example_scope.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/hf2/example_scope.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_awg.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_awg.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_awg_sourcefile.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_awg_sourcefile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_boxcar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_boxcar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZIUHFLI/zhinst/ziPython.pyd" beforeDir="false" afterPath="$PROJECT_DIR$/ZIUHFLI/zhinst/ziPython.pyd" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -36,11 +169,12 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/ZIMFLI" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/ZIHDAWG" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ldrmic\PycharmProjects\LabberDrivers\ZIHDAWG" />
       <recent name="C:\Users\ldrmic\PycharmProjects\LabberDrivers\ZIMFLI" />
       <recent name="C:\Users\ldrmic\PycharmProjects\LabberDrivers\VariableAttenuator" />
       <recent name="C:\Users\ldrmic\PycharmProjects\LabberDrivers" />
@@ -58,7 +192,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.scratch_4">
+  <component name="RunManager" selected="Python.scratch_1">
     <configuration name="VariableAttenuator" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="LabberDrivers" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -101,7 +235,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="example_awg" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="scratch" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="LabberDrivers" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -109,11 +243,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="WORKING_DIRECTORY" value="$APPLICATION_CONFIG_DIR$/scratches" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ZIUHFLI/zhinst/examples/uhf/example_awg.py" />
+      <option name="SCRIPT_NAME" value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -166,11 +300,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.scratch_1" />
+        <item itemvalue="Python.scratch" />
         <item itemvalue="Python.scratch_4" />
         <item itemvalue="Python.VariableAttenuator" />
         <item itemvalue="Python.Zurich Instruments UHF" />
-        <item itemvalue="Python.scratch_1" />
-        <item itemvalue="Python.example_awg" />
       </list>
     </recent_temporary>
   </component>
@@ -269,7 +403,14 @@
       <option name="project" value="LOCAL" />
       <updated>1567598580406</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Enable poll() for read-outs">
+      <created>1569491883528</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1569491883528</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
