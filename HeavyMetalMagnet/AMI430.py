@@ -11,7 +11,8 @@ from BaseDriver import LabberDriver
 class Driver(LabberDriver):
     """
     This class is an implementation of the AMI430 driver. To avoid random people connecting to our instrument the IP
-    addresses of the magnets are left blank. User should edit the file to put the addresses in.
+    addresses of the magnets are left blank. User should edit the file to put the addresses in. The addresses are static
+    and you can check them physically on the instrument.
 
     """
 
@@ -21,11 +22,11 @@ class Driver(LabberDriver):
 
     # x151 144 195
 
-    x_magnet_IP = "10.21.42.195"
+    x_magnet_IP = ""
     x_magnet_PORT = 7180
-    y_magnet_IP = "10.21.42.161"
+    y_magnet_IP = ""
     y_magnet_PORT = 7180
-    z_magnet_IP = "10.21.42.151"
+    z_magnet_IP = ""
     z_magnet_PORT = 7180
 
     BUFFSIZE = 1024
@@ -42,9 +43,14 @@ class Driver(LabberDriver):
     """
     def performOpen(self, options={}):
         """
-        This method should attempt to connect to all 3 instruments (X, Y and Z)
+        This method should attempt to connect to all 3 instruments (X, Y and Z). Since this magnet is actually composed
+        from 3 magnets none of the pre existing driver classes is suitable for this instrument. This particular
+        instrument consists of 3 AMI430 magnets each one for one of the x,y, and z axis. Since the magnets are connected
+        to the LAN we use 3 TCP/IP sockets to connect to each of the magnets
 
-        :return:
+        :return: (bool, bool, bool) representing status of socket for magnets (x, y, z). True if socket was
+                        successfully opened, False if it failed.
+        :rtype: tuple
         """
         try:
             self.x_magnet_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,15 +80,19 @@ class Driver(LabberDriver):
             self.CONNECTED_MAGNETS["z"] = True
             self._receive(self.z_magnet_socket)
 
+        return self.CONNECTED_MAGNETS
+
     def performClose(self, options={}):
         """
-        This method should attempt to close connection to all individual magnet sockets.
+        This method should attempt to close connection to all individual magnet sockets. Simply closing each of the
+        sockets should be enough.
 
-        :return:
+        :return: NoneType
         """
         self.x_magnet_socket.close()
         self.y_magnet_socket.close()
         self.z_magnet_socket.close()
+        return
 
     def performSetValue(self, quant, value, sweepRate=0.0, options={}):
         """
@@ -95,20 +105,25 @@ class Driver(LabberDriver):
         All get and set methods accept an argument called magnet_socket which should be a reference to a socket that
         corresponds to the magnet being modified.
 
-        :param quant: string: Name of the quantity that is being modified. Names of the quantities are specified in the
+        :param quant: Name of the quantity that is being modified. Names of the quantities are specified in the
         .ini file located in the same folder as the driver.
-        :param value: any: Value to which the quantity is being set to
+        :type quant: str
+        :param value: Value to which the quantity is being set to
+        :type value:
         :param sweepRate: I have no idea what this is, it is required by labber
+        :type sweepRate: float
         :param options: Same as sweepRate
-        :return: any: value that is being sent to the instrument to set the quantity to
+        :type options:
+        :return: value that is being sent to the instrument to set the quantity to
+        :rtype: bool | int | float | None
         """
 
         # naming convention for quantities is magnet_quantity (ex. x_current, y_field, z_ramp_rate, ...)
         # from that we can extract what magnet we need to communicate with
         if quant.name[0] == "x":
-            socket = self.x_magnet_socket
             # field rating is required when setting a ramp rate ("CONF:RAMP:RATE:FIELD 1, value, fieldrating")
             fieldrating = 1.01  # field rating is a maximum value that field can go to and its different for all magnets
+            socket = self.x_magnet_socket
         elif quant.name[0] == "y":
             fieldrating = 0.98
             socket = self.y_magnet_socket
@@ -147,6 +162,8 @@ class Driver(LabberDriver):
         elif quant.name[2:] == "setPoint":
             self.set_field(socket, value)
         elif quant.name[2:] == "rampRate":
+            if fieldrating is None:
+                fieldrating = 0.98
             self.set_ramp_rate(socket, value, fieldrating)
         elif quant.name[2:] == "quench":
             self.reset_quench(socket)
@@ -175,10 +192,12 @@ class Driver(LabberDriver):
         All get and set methods accept an argument called magnet_socket which should be a reference to a socket that
         corresponds to the magnet that we are communicating with.
 
-        :param quant: string: Name of the quantity that we are getting. Names of the quantities are specified in the
+        :param quant: Name of the quantity that we are getting. Names of the quantities are specified in the
         .ini file located in the same folder as the driver.
+        :type quant: str
         :param options: parameter required by labber, i don't really know what it does
         :return: any: a response from the instrument after sending a command to read the specified parameter
+        :rtype:
         """
         # naming convention for quantities is magnet_quantity (ex. x_current, y_field, z_ramp_rate, ...)
         # from that we can extract what magnet we need to communicate with
@@ -242,10 +261,12 @@ class Driver(LabberDriver):
         Send a command to a magnet specified by its socket. After sending a command sleep for 0.6 seconds to give magnet
         time to do the required action.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
-        :param command: string: A command that we are sending to an instrument
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket socket.socket
+        :param command: A command that we are sending to an instrument
+        :type command: str
         :return: NoneType
         """
         magnet_socket.sendall(bytes(command, "ASCII"))
@@ -258,10 +279,12 @@ class Driver(LabberDriver):
         is stored in the standard event buffer. In order to obtain  the result from the instrument we have to read this
         buffer.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return: String: Content of the instruments standard event buffer after sending the command
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :return: Content of the instruments standard event buffer after sending the command
+        :rtype: str
         """
         return magnet_socket.recv(self.BUFFSIZE)
 
@@ -271,11 +294,14 @@ class Driver(LabberDriver):
         First we send a command to query some instrument value, instrument replies by setting that value in the
         standard event buffer. Then we read and return the value from the standard event buffer.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
-        :param command: string: A command that we are sending to an instrument
-        :return: String: Content of the instruments standard event buffer after sending the command
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :param command: A command that we are sending to an instrument
+        :type command: str
+        :return: Content of the instruments standard event buffer after sending the command
+        :rtype: str
         """
         self._send(magnet_socket, command)
         return self._receive(magnet_socket)
@@ -286,6 +312,21 @@ class Driver(LabberDriver):
     # ####################################
     """
     def is_ready_to_ramp(self, magnet_socket):
+        """
+        Ramp can have 9 states: Ramping, Holding, Paused, Manual up, Manual down, Ramping to zero, Quench detected,
+        At zero, Heating switch and Cooling switch
+
+        Magnet is NOT ready to ramp if MAGNET is in persistent mode or if RAMP is in one of the states: Ramping,
+        Magnet quench, Manual up, Manual down, Ramping to zero, Heating switch or Cooling switch
+
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+
+        :return: True if ready, False if not ready
+        :rtype: bool
+        """
         if self.get_quench(magnet_socket):
             logging.error(__name__ + ': Magnet quench')
             return False
@@ -322,9 +363,10 @@ class Driver(LabberDriver):
         """
         Issue a RAMP state. Magnet will start ramping
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
         :return: NoneType
         """
         self._send(magnet_socket, "RAMP\n")
@@ -334,9 +376,10 @@ class Driver(LabberDriver):
         """
         Issue a PAUSE state. Magnet will stop ramping immediately.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
+        :param magnet_socket:  Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                               directions is controled by a unique instrument and they have to be specified by
+                               their socket.
+        :type magnet_socket: socket.socket
         :return: NoneType
         """
         self._send(magnet_socket, "PAUSE\n")
@@ -346,9 +389,10 @@ class Driver(LabberDriver):
         """
         Issue ZERO state. Magnet will ramp to zero (regardless of earlier pause)
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
         :return: NoneType
         """
         self._send(magnet_socket, "ZERO\n")
@@ -373,7 +417,7 @@ class Driver(LabberDriver):
 
     def get_p_switch(self, magnet_socket):
         """
-
+        Get the current state of p switch. Can be ON or OFF.
 
         :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
                                     directions is controled by a unique instrument and they have to be specified by
@@ -384,10 +428,13 @@ class Driver(LabberDriver):
 
     def set_p_switch(self, magnet_socket, value):
         """
-        Set the value of pSwitch of a magnet specified by magnet_socket to a value specified by parameter value.
+        Set the value of pSwitch of a magnet specified by :magnet_socket: to a value specified by parameter :value:.
 
-        :param magnet_socket: Socket: Reference to one of 3 sockets (x, y or z)
-        :param value: Boolean (1 or 0): Value to set the pSwitch to, 1 for ON, 0 for OFF
+        :param magnet_socket: Reference to one of 3 sockets (x, y or z)
+        :type magnet_socket: socket.socket
+        :param value: Value to set the pSwitch to, 1 for ON, 0 for OFF
+        :type value: bool
+
         :return: NoneType
         """
         if value:
@@ -410,6 +457,7 @@ class Driver(LabberDriver):
         :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
                                     directions is controled by a unique instrument and they have to be specified by
                                     their socket.
+
         :return: Float: Current value of the ramp rate. Represents how fast is the value of field changing
         """
         return float(str(self._ask(magnet_socket, "RAMP:RATE:FIELD:1?\n")).split(",", 1)[0][2:])
@@ -425,6 +473,7 @@ class Driver(LabberDriver):
                         is changing
         :param magnet_fieldrating: Maximum allowed ramp rate for a magnet specified by its socket. Calculated and taken
                                     care of in the .ini file.
+
         :return: NoneType
         """
         self._send(magnet_socket, "CONF:RAMP:RATE:FIELD 1, {}, {}\n".format(str(value), str(magnet_fieldrating)))
@@ -437,6 +486,7 @@ class Driver(LabberDriver):
         :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
                                     directions is controled by a unique instrument and they have to be specified by
                                     their socket.
+
         :return: Float: Current value of the magnetic field.
         """
         self.get_ramp_state(magnet_socket)
@@ -447,11 +497,13 @@ class Driver(LabberDriver):
         This method does not set the field to a certain value but rather configures a setPoint to that value and starts
         ramping the magnet to the selected value.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
         :param value: Desired value for the field
-        :param magnet:
+        :type value: float
+
         :return: NoneType
         """
         self.pause_ramp(magnet_socket)
@@ -460,17 +512,32 @@ class Driver(LabberDriver):
         return True
 
     def set_set_point(self, magnet_socket, value):
+        """
+        Set point is the value to which the magnet will ramp the field.
+
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :param value: Desired value for the set point
+        :type value: float
+        :return: NoneType
+        """
         self.pause_ramp(magnet_socket)
         self._send(magnet_socket, "CONF:FIELD:TARG {} ;".format(float(value)))
+        return
 
     def get_set_point(self, magnet_socket):
         """
         Get the current set point of the field. The is the value to which we are trying to ramp the field to.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return: Float: Current set point to which we are trying to ramp the field to.
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+
+        :return: Current set point to which we are trying to ramp the field to.
+        :rtype: float
         """
         self.get_ramp_state(magnet_socket)
         return float(self._ask(magnet_socket, "FIELD:TARG?\n"))
@@ -479,10 +546,12 @@ class Driver(LabberDriver):
         """
         Method that gets the value of the current.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return: Float: Value of the current on the instrument.
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :return: Value of the current on the instrument.
+        :rtype: float
         """
         return float(self._ask(magnet_socket, "CURR:MAG?\n"))
 
@@ -491,10 +560,12 @@ class Driver(LabberDriver):
         Method that pauses ramping of the magnet, changes the value of the current and then resumes the ramping of the
         field.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
         :param value: Value that we want our current to be.
+        :type value: float
         :return: NoneType
         """
         self.pause_ramp(magnet_socket)
@@ -506,10 +577,12 @@ class Driver(LabberDriver):
         """
         Method that gets the currently used units in the instrument.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return: Integer: Currently used units
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :return: Currently used units
+        :rtype: int
         """
         return int(self._ask(magnet_socket, "FIELD:UNITS?\n"))
 
@@ -517,10 +590,12 @@ class Driver(LabberDriver):
         """
         Method that is used to set the units that the instrument uses.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
         :param value: Desired units
+        :type value: int
         :return: NoneType
         """
         self._send(magnet_socket, "CONF:FIELD:UNITS {}".format(value))
@@ -530,10 +605,12 @@ class Driver(LabberDriver):
         """
         Method tat is used to check if the magnet quenched.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return: Boolean: True if quenching, False if not
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :return: True if quenching, False if not
+        :rtype: bool
         """
         return int(self._ask(magnet_socket, "QU?\n")) == 1
 
@@ -541,10 +618,11 @@ class Driver(LabberDriver):
         """
         Method that resets the quench flag on the instrument.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return:
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :return: NoneType
         """
         return self._send(magnet_socket, "QU 0\n")
 
@@ -552,10 +630,12 @@ class Driver(LabberDriver):
         """
         Method that checks if the instrument is in persistent mode
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return: Boolean: True if in persistent mode, False otherwise
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :return: True if in persistent mode, False otherwise
+        :rtype: bool
         """
         return int(self._ask(magnet_socket, "PERS?\n")) == 1
 
@@ -563,11 +643,14 @@ class Driver(LabberDriver):
         """
         Method that puts the instrument in or out of persistent mode.
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
-        :param value: Boolean: True if we want the instrument in persistent mode, otherwise False
-        :return: Boolean: True if instrument is in persistent mode at the end of this method, otherwise False
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :param value: True if we want the instrument in persistent mode, otherwise False
+        :type value: bool
+        :return: True if instrument is in persistent mode at the end of this method, otherwise False
+        :rtype: bool
         """
         if value == 1:
             if self.get_persistent(magnet_socket):
@@ -610,10 +693,12 @@ class Driver(LabberDriver):
         """
 
 
-        :param magnet_socket: Socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
-                                    directions is controlled by a unique instrument and they have to be specified by
-                                    their socket.
-        :return: String: Value stored in the error buffer of the instrument
+        :param magnet_socket: Specifies magnets socket. Magnet can have more then 1 direction. Each of those
+                              directions is controlled by a unique instrument and they have to be specified by
+                              their socket.
+        :type magnet_socket: socket.socket
+        :return: Value stored in the error buffer of the instrument
+        :rtype: str
         """
         return self._ask(magnet_socket, "SYST:ERR?\n").rstrip()
 
@@ -628,11 +713,15 @@ class Driver(LabberDriver):
         Method that takes Spherical coordinates that represent the current field, and returns cartesian coordinates
         representing the same field.
 
-        :param r: Float: Radius of the spherical coordinate system (value of the combined field)
-        :param theta: Float: Angle between x-axis and the projection of the vector (representing combined field) to the
-                            x-y plane
-        :param phi: Float: Angle between z-axis and vector representing the combined field
-        :return: Float, Float, Float: Cartesian coordinates (value of field in each direction [x, y and z])
+        :param r: Radius of the spherical coordinate system (value of the combined field)
+        :type r: float
+        :param theta: Angle between x-axis and the projection of the vector (representing combined field) to the
+                      x-y plane
+        :type theta: float
+        :param phi: Angle between z-axis and vector representing the combined field
+        :type phi: float
+        :return: (Float, Float, Float): Cartesian coordinates (value of field in each direction [x, y and z])
+        :rtype: tuple
         """
         x = r * np.sin(theta) * np.cos(phi)
         y = r * np.sin(phi) * np.sin(theta)
@@ -645,12 +734,16 @@ class Driver(LabberDriver):
         angle between x axis and x-y plane. Theta represents the angle between z axis and radius in a plane they both
         belong to.
 
-        :param x: Float: Value of the field in X direction
-        :param y: Float: Value of the field in Y direction
-        :param z: Float: Value of the field in Z direction
-        :return: r, phi, theta: value of radius (r = np.sqrt(x * x + y * y + z * z)),
+        :param x: Value of the field in X direction
+        :type x: float
+        :param y: Value of the field in Y direction
+        :type y: float
+        :param z: Value of the field in Z direction
+        :type z: float
+        :return: (r, phi, theta): value of radius (r = np.sqrt(x * x + y * y + z * z)),
                                 value of phi (angle between x axis and projection of radius on to x-y plane),
                                 value of theta (angle between z axis and radius in the plane they both belong to)
+        :rtype: tuple
         """
         r = np.sqrt(x * x + y * y + z * z)
         phi = np.rad2deg(np.arctan2(y, x))
@@ -661,9 +754,10 @@ class Driver(LabberDriver):
         """
         Calculate the value of angle between x axis and the projection of radius on to the x-y plane. Since it only
         needs values of x and y fields, it gets those from the instruments and then calculates the angle. Formula used
-        for claculation is: phi = np.rad2deg(np.arctan2(y, x))
+        for calculation is: phi = np.rad2deg(np.arctan2(y, x))
 
-        :return:
+        :return: Value of phi
+        :rtype: float
         """
         x = self.get_field(self.x_magnet_socket)
         y = self.get_field(self.y_magnet_socket)
@@ -677,7 +771,10 @@ class Driver(LabberDriver):
         Set the values of x, y and z field in such a way that radius remains the same, theta remains the same, but phi
         gets changed to a value specified by user.
 
-        :return: Float: Value passed to this method (the one we want to set phi to)
+        :param value: value to which to set the phi to
+        :type value: float
+        :return: Value passed to this method (the one we want to set phi to)
+        :rtype: float
         """
         target_angle = value
 
@@ -695,7 +792,8 @@ class Driver(LabberDriver):
         Get the value of the helper variable constant phi. This variable is used to calculate the fields when setting
         radius or theta.
 
-        :return: Float: Value of helper variable constant phi
+        :return: Value of helper variable constant phi
+        :rtype: float
         """
         return self.phi
 
@@ -704,8 +802,10 @@ class Driver(LabberDriver):
         Set the value of the helper variable constant phi to a value specified by user. This helper variable is later
         used in method the set the radius and theta.
 
-        :param value: Float: value to which to set the constant phi to
-        :return: Float: value passed to this method (one we want to set the phi to)
+        :param value: value to which to set the constant phi to
+        :type value: float
+        :return: value passed to this method (one we want to set the phi to)
+        :rtype: float
         """
         self.phi = value
         return value
@@ -715,7 +815,8 @@ class Driver(LabberDriver):
         Get the values of x, y and z fields from the instruments and calculate the value of theta from obtained values.
         theta = np.rad2deg(np.arccos(z / r))
 
-        :return: Float: Current value of the angle theta (between z axis and the radius)
+        :return: Current value of the angle theta (between z axis and the radius)
+        :rtype: float
         """
         x = self.get_field(self.x_magnet_socket)
         y = self.get_field(self.y_magnet_socket)
@@ -730,7 +831,10 @@ class Driver(LabberDriver):
         Set the values of x, y and z field in such a way that radius remains the same, phi remains the same, but theta
         gets changed to a value specified by user.
 
-        :return: Float: Value passed to this method (the one we want to set theta to)
+        :param value: value to which to set the theta to
+        :type value: float
+        :return: Value passed to this method (the one we want to set theta to)
+        :rtype: float
         """
         target_angle = value
 
@@ -748,7 +852,8 @@ class Driver(LabberDriver):
         Get the value of the helper variable constant theta. This variable is used to calculate the fields when setting
         radius or phi.
 
-        :return: Float: Value of the helper variable constant theta
+        :return: Value of the helper variable constant theta
+        :rtype: float
         """
         return self.theta
 
@@ -757,8 +862,10 @@ class Driver(LabberDriver):
         Set the value of the helper variable constant theta to a value specified by user. This helper variable is later
         used in method the set the radius and phi.
 
-        :param value: Float: value to which to set the constant theta to
-        :return: Float: value passed to this method (one we want to set the theta to)
+        :param value: value to which to set the constant theta to
+        :type value: float
+        :return: value passed to this method (one we want to set the theta to)
+        :rtype: float
         """
         self.theta = value
         return value
@@ -768,6 +875,7 @@ class Driver(LabberDriver):
         Calculate and return the value of radius. Value of the radius is calculated by formula: sqrt(x^2 + y^2 + z^2)
 
         :return: Current REAL value of the radius
+        :rtype: float
         """
         x = self.get_field(self.x_magnet_socket)
         y = self.get_field(self.y_magnet_socket)
@@ -779,7 +887,10 @@ class Driver(LabberDriver):
         Set the values of x, y and z field in such a way that theta remains the same, phi remains the same, but radius
         gets changed to a value specified by user.
 
-        :return: Float: Value passed to this method (the one we want to set radius to)
+        :param value: value to which to set the radius to
+        :type value: float
+        :return: Value passed to this method (the one we want to set radius to)
+        :rtype: float
         """
         target_radius = value
 
@@ -797,7 +908,8 @@ class Driver(LabberDriver):
         Get the value of the helper variable constant radius. This variable is used to calculate the fields when setting
         phi or theta.
 
-        :return: Float: value of the helper variable constant radius
+        :return: value of the helper variable constant radius
+        :rtype: float
         """
         return self.radius
 
@@ -806,7 +918,10 @@ class Driver(LabberDriver):
         Get the value of the helper variable constant radius. This variable is used to calculate the fields when setting
         theta or phi.
 
-        :return: Float: Value of the helper variable constant radius
+        :param value: value to which to set the constant radius to
+        :type value: float
+        :return: Value of the helper variable constant radius
+        :rtype: float
         """
         self.radius = value
         return value
@@ -818,6 +933,7 @@ class Driver(LabberDriver):
         :return: radius (radius = np.sqrt(x * x + y * y + z * z))
                  phi (phi = np.rad2deg(np.arctan2(y, x)))
                  theta (np.rad2deg(np.arccos(z / radius)))
+        :rtype: tuple
         """
         x = self.get_field(self.x_magnet_socket)
         y = self.get_field(self.y_magnet_socket)
@@ -842,9 +958,13 @@ class Driver(LabberDriver):
         TODO: Change limits (Radius, stop and restart threshold)
 
         :param target_x: X magnet will ramp to this value
+        :type target_x: float
         :param target_y: Y magnet will ramp to this value
+        :type target_y: float
         :param target_z: Z magnet will ramp to this value
-        :return: Boolean: True if successful, else False
+        :type target_z: float
+        :return: True if successful, else False
+        :rtype: bool
         """
 
         target_radius = np.sqrt(target_x * target_x + target_y * target_y + target_z * target_z)

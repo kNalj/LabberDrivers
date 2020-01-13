@@ -18,6 +18,7 @@ class Driver(LabberDriver):
         Perform the operation of opening the instrument connection
 
         :param options:
+        :type options
         :return: NoneType
         """
         try:
@@ -32,7 +33,8 @@ class Driver(LabberDriver):
         """
 
         :param options:
-        :return:
+        :type options:
+        :return: NoneType
         """
 
         self.socket.close()
@@ -42,9 +44,10 @@ class Driver(LabberDriver):
 
         :param quant:
         :param value:
-        :param sweepRate:
+        :param sweepRate: The speed at which the quantity will be swept
         :param options:
         :return:
+        :rtype: None | int | float | bool | str
         """
         if quant.name == "Attenuation":
             self.set_attenuation(value)
@@ -61,10 +64,12 @@ class Driver(LabberDriver):
             return self.get_attenuation()
 
     def _send(self, command):
-        """
+        """Send a command to the instrument. After sending a command sleep for 0.6 seconds to give the instrument
+        time to do the required action.
 
-        :param command:
-        :return:
+        :param command: A command that we are sending to an instrument
+        :type command: str
+        :return: NoneType
         """
         self.socket.send(str.encode(command + "\r\n"))
         time.sleep(0.6)
@@ -72,25 +77,36 @@ class Driver(LabberDriver):
 
     def _receive(self):
         """
+        Read the data from the instruments standard event buffer. When a command is sent to an instrument the response
+        is stored in the standard event buffer. In order to obtain  the result from the instrument we have to read this
+        buffer.
 
-        :return:
+        :return: Content of the instruments standard event buffer after sending the command
+        :rtype: str
         """
         return self.socket.recv(self.buffer_size)
 
     def _ask(self, command):
         """
+        Send a command and instantly read a reply from the instrument. To be used when getting an instrument value.
+        First we send a command to query some instrument value, instrument replies by setting that value in the
+        standard event buffer. Then we read and return the value from the standard event buffer.
 
-        :param command:
-        :return:
+        :param command: A command that we are sending to an instrument
+        :type command: str
+        :return: Content of the instruments standard event buffer after sending the command
+        :rtype: str
         """
         self._send(command)
         return self._receive()
 
     def set_attenuation(self, value):
         """
+        A method used to set the attenuation of the instrument.
 
-        :param value:
-        :return:
+        :param value: value to which to set the attenuation to.
+        :return: the very same value that was passed to the method. The one we attempted to set the attenuation to.
+        :rtype: float
         """
         self._send(":SETATT={}".format(float(value)))
         self._receive()
@@ -98,8 +114,10 @@ class Driver(LabberDriver):
 
     def get_attenuation(self):
         """
+        Method that gets the value of attenuation.
 
-        :return:
+        :return: Real value of the attenuation
+        :rtype: float
         """
         return float(self._ask(":ATT?"))
 

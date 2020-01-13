@@ -14,7 +14,12 @@ class Driver(InstrumentDriver.InstrumentWorker):
     """ This class wraps the ziPython API"""
 
     def performOpen(self, options={}):
-        """Perform the operation of opening the instrument connection"""
+        """
+        Perform the operation of opening the instrument connection
+
+        :param options:
+        :return:
+        """
 
         try:
             self.ziConnection = zi.autoConnect(8004, 4)
@@ -53,12 +58,26 @@ class Driver(InstrumentDriver.InstrumentWorker):
         self.scope_module = self.ziConnection.scopeModule()
 
     def performClose(self, bError=False, options={}):
-        """Perform the close instrument connection operation"""
+        """
+        Perform the close instrument connection operation
+
+        :param bError:
+        :param options:
+        :return:
+        """
         pass
 
     def performSetValue(self, quant, value, sweepRate=0.0, options={}):
-        """Perform the Set Value instrument operation. This function should
-        return the actual value set by the instrument"""
+        """
+        Perform the Set Value instrument operation. This function should return the actual value set by the
+        instrument
+
+        :param quant:
+        :param value:
+        :param sweepRate:
+        :param options:
+        :return:
+        """
         # ############# BOOLEANS ################
         if quant.name in ["SigIn1VoltageAutorange", "SigIn1VoltageAC", "SigIn1VoltageImp", "SigIn1VoltageDiff",
                           "SigIn1VoltageFloat", "SigIn1CurrentAutorange", "SigIn1CurrentFloat"] + \
@@ -114,6 +133,12 @@ class Driver(InstrumentDriver.InstrumentWorker):
         return value
 
     def performGetValue(self, quant, options={}):
+        """
+
+        :param quant:
+        :param options:
+        :return:
+        """
         if self.isFirstCall(options):
             self.resultBuffer = {}
             self.traceBuffer = {}
