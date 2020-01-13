@@ -55,7 +55,7 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programmingg Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -133,20 +133,20 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     num_pulses = 20
 
     # Configure the Software Trigger Module.
-    trigger.set('trigger/device', device)
+    trigger.set('device', device)
     # We will trigger on the demodulator sample's R value.
     trigger_path = '/%s/demods/%d/sample' % (device, demod_index)
     triggernode = trigger_path + '.r'
-    trigger.set('trigger/0/triggernode', triggernode)
+    trigger.set('/0/triggernode', triggernode)
     # Use an edge trigger.
-    trigger.set('trigger/0/type', 4)  # 4 = tracking edge
-    trigger.set('trigger/0/bandwidth', 2)
+    trigger.set('/0/type', 4)  # 4 = tracking edge
+    trigger.set('/0/bandwidth', 2)
     # Trigger on the positive edge.
-    trigger.set('trigger/0/edge', 1)  # 1 = positive
+    trigger.set('/0/edge', 1)  # 1 = positive
     # The set the trigger level.
     trigger_level = (sigouts_high - sigouts_low)/5
-    print("Setting trigger/0/level to {:.3f}.".format(trigger_level))
-    trigger.set('trigger/0/level', trigger_level)
+    print("Setting /0/level to {:.3f}.".format(trigger_level))
+    trigger.set('/0/level', trigger_level)
     # Set the trigger hysteresis to a percentage of the trigger level: This
     # ensures that triggering is robust in the presence of noise. The trigger
     # becomes armed when the signal passes through the hysteresis value and will
@@ -155,26 +155,26 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     # edge trigger relative to the trigger level (positively for a negative edge
     # trigger).
     trigger_hysteresis = 0.5*trigger_level
-    print("Setting trigger/0/hysteresis {:.3f}.".format(trigger_hysteresis))
-    trigger.set('trigger/0/hysteresis', trigger_hysteresis)
+    print("Setting /0/hysteresis {:.3f}.".format(trigger_hysteresis))
+    trigger.set('/0/hysteresis', trigger_hysteresis)
     # The number of times to trigger.
     trigger_count = int(num_pulses/2)
-    trigger.set('trigger/0/count', trigger_count)
-    trigger.set('trigger/0/holdoff/count', 0)
-    trigger.set('trigger/0/holdoff/time', 0.100)
+    trigger.set('/0/count', trigger_count)
+    trigger.set('/0/holdoff/count', 0)
+    trigger.set('/0/holdoff/time', 0.100)
     trigger_delay = -0.050
-    trigger.set('trigger/0/delay', trigger_delay)
+    trigger.set('/0/delay', trigger_delay)
     # The length of time to record each time we trigger
     trigger_duration = 0.300
-    trigger.set('trigger/0/duration', trigger_duration)
+    trigger.set('/0/duration', trigger_duration)
     # Do not extend the recording of the trigger frame if another
     # trigger arrives within trigger_duration.
-    trigger.set('trigger/0/retrigger', 0)
+    trigger.set('/0/retrigger', 0)
     # The size of the internal buffer used to record triggers (in seconds), this
     # should be larger than trigger_duration.
     buffer_size = 2*trigger_duration
-    trigger.set('trigger/buffersize', buffer_size)
-    trigger.set('trigger/historylength', 100)
+    trigger.set('buffersize', buffer_size)
+    trigger.set('historylength', 100)
 
     # We subscribe to the same demodulator sample we're triggering on, but we
     # could additionally subscribe to other node paths.
@@ -223,9 +223,6 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     # Stop the Module (this is also ok if trigger.finished() is True).
     trigger.finish()
 
-    # Stop the Module's thread and clear the memory.
-    trigger.clear()
-
     # Check that the dictionary returned is non-empty.
     assert data, "read() returned an empty data dictionary, did you subscribe to any paths?"
     # Note: data could be empty if no data arrived, e.g., if the demods were
@@ -255,12 +252,12 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
 
         # Plot some relevant Software Trigger parameters.
         plt.axvline(0.0, linewidth=2, linestyle='--', color='k', label="Trigger time")
-        plt.axvline(trigger_delay, linewidth=2, linestyle='--', color='grey', label='trigger/0/delay')
+        plt.axvline(trigger_delay, linewidth=2, linestyle='--', color='grey', label='/0/delay')
         plt.axvline(trigger_duration + trigger_delay, linewidth=2, linestyle=':', color='k',
-                    label='trigger/0/duration + trigger/0/delay')
-        plt.axhline(trigger_level, linewidth=2, linestyle='-', color='k', label='trigger/0/level')
+                    label='/0/duration + /0/delay')
+        plt.axhline(trigger_level, linewidth=2, linestyle='-', color='k', label='/0/level')
         plt.axhline(trigger_level - trigger_hysteresis, linewidth=2, linestyle='-.', color='k',
-                    label='trigger/0/hysteresis')
+                    label='/0/hysteresis')
         axes.axvspan(trigger_delay, trigger_duration + trigger_delay, alpha=0.2, color='grey')
         axes.axhspan(trigger_level, trigger_level - trigger_hysteresis, alpha=0.5, color='grey')
         # Plot the signal segments returned by the Software Trigger.
@@ -276,7 +273,7 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
             plt.plot(t, R, color=colors[i])
 
             # Plot the tracking trigger's lowpass filter values. This allows us
-            # to verify that the filter's bandwidth (trigger/0/bandwidth) is
+            # to verify that the filter's bandwidth (/0/bandwidth) is
             # configured appropriately.
             t_lowpass = (data['/%s/trigger/0/lowpass' % device][i]['timestamp'] - trigger_timestamp)/clockbase
             value_lowpass = data['/%s/trigger/0/lowpass' % device][i]['value']

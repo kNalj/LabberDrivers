@@ -41,7 +41,7 @@ def run_example(device_id):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -79,7 +79,7 @@ def run_example(device_id):
         ['/%s/sigouts/%d/on'               % (device, out_channel), 1],
         ['/%s/sigouts/%d/range'            % (device, out_channel), 1],
         ['/%s/awgs/0/outputs/%d/amplitude' % (device, awg_channel), amplitude],
-        ['/%s/awgs/0/outputs/0/modulation/mode'       % device, 0],
+        ['/%s/awgs/0/outputs/0/modulation/mode' % device, 0],
         ['/%s/awgs/0/time'                 % device, 0],
         ['/%s/awgs/0/userregs/0'           % device, 0]
     ]
@@ -123,21 +123,24 @@ def run_example(device_id):
     waveform_0 = -1.0 * np.blackman(AWG_N)
 
     # Define an array of values that are used to generate wave w2
-    waveform_2 = np.sin(np.linspace(0, 2*np.pi, AWG_N))
+    waveform_2 = np.sin(np.linspace(0, 2*np.pi, 96))
 
     # Fill the waveform values into the predefined program by inserting the array
-    # as comma-separated floating-point numbers into awg_program
+    # as comma-separated floating-point numbers into awg_program.
+    # Warning: Defining waveforms with the vect function can increase the code size
+    #          considerably and should be used for short waveforms only.
     awg_program = awg_program.replace('_w2_', ','.join([str(x) for x in waveform_2]))
-    # Do the same with the integer constant AWG_N
+
+    # Fill in the integer constant AWG_N
     awg_program = awg_program.replace('_c1_', str(AWG_N))
 
     # Create an instance of the AWG Module
     awgModule = daq.awgModule()
-    awgModule.set('awgModule/device', device)
+    awgModule.set('device', device)
     awgModule.execute()
 
     # Get the modules data directory
-    data_dir = awgModule.getString('awgModule/directory')
+    data_dir = awgModule.getString('directory')
     # All CSV files within the waves directory are automatically recognized by the AWG module
     wave_dir = os.path.join(data_dir, "awg", "waves")
     if not os.path.isdir(wave_dir):
@@ -149,43 +152,53 @@ def run_example(device_id):
     np.savetxt(csv_file, waveform_0)
 
     # Transfer the AWG sequence program. Compilation starts automatically.
-    awgModule.set('awgModule/compiler/sourcestring', awg_program)
+    awgModule.set('compiler/sourcestring', awg_program)
     # Note: when using an AWG program from a source file (and only then), the compiler needs to
-    # be started explicitly with awgModule.set('awgModule/compiler/start', 1)
-    while awgModule.getInt('awgModule/compiler/status') == -1:
+    # be started explicitly with awgModule.set('compiler/start', 1)
+    while awgModule.getInt('compiler/status') == -1:
         time.sleep(0.1)
 
-    if awgModule.getInt('awgModule/compiler/status') == 1:
+    if awgModule.getInt('compiler/status') == 1:
         # compilation failed, raise an exception
-        raise Exception(awgModule.getString('awgModule/compiler/statusstring'))
-    else:
-        if awgModule.getInt('awgModule/compiler/status') == 0:
-            print("Compilation successful with no warnings, will upload the program to the instrument.")
-        if awgModule.getInt('awgModule/compiler/status') == 2:
-            print("Compilation successful with warnings, will upload the program to the instrument.")
-            print("Compiler warning: ", awgModule.getString('awgModule/compiler/statusstring'))
-        # wait for waveform upload to finish
-        i = 0
-        while awgModule.getDouble('awgModule/progress') < 1.0:
-            print("{} awgModule/progress: {}".format(i, awgModule.getDouble('awgModule/progress')))
-            time.sleep(0.1)
-            i += 1
-        print("{} awgModule/progress: {}".format(i, awgModule.getDouble('awgModule/progress')))
-    print("Finished.")
+        raise Exception(awgModule.getString('compiler/statusstring'))
+
+    if awgModule.getInt('compiler/status') == 0:
+        print("Compilation successful with no warnings, will upload the program to the instrument.")
+    if awgModule.getInt('compiler/status') == 2:
+        print("Compilation successful with warnings, will upload the program to the instrument.")
+        print("Compiler warning: ", awgModule.getString('compiler/statusstring'))
+
+    # Wait for the waveform upload to finish
+    time.sleep(0.2)
+    i = 0
+    while (awgModule.getDouble('progress') < 1.0) and (awgModule.getInt('elf/status') != 1):
+        print("{} progress: {:.2f}".format(i, awgModule.getDouble('progress')))
+        time.sleep(0.2)
+        i += 1
+    print("{} progress: {:.2f}".format(i, awgModule.getDouble('progress')))
+    if awgModule.getInt('elf/status') == 0:
+        print("Upload to the instrument successful.")
+    if awgModule.getInt('elf/status') == 1:
+        raise Exception("Upload to the instrument failed.")
 
     # Replace the waveform w3 with a new one.
     waveform_3 = np.sinc(np.linspace(-6*np.pi, 6*np.pi, AWG_N))
-    # The following command defines the waveform to replace.
-    # In case a single waveform is used, use index = 0.
-    # In case multiple waveforms are used, the index (0, 1, 2, ...) should correspond to the position of the waveform
-    # in the Waveforms sub-tab of the AWG tab (here index = 1).
-    index = 2
-    daq.setInt('/' + device + '/awgs/0/waveform/index', index)
-    daq.sync()
-    # Write the waveform to the memory. For the transferred array, floating-point (-1.0...+1.0)
-    # as well as integer (-32768...+32768) data types are accepted.
-    # For dual-channel waves, interleaving is required.
-    daq.vectorWrite('/' + device + '/awgs/0/waveform/data', waveform_3)
+    # Let N be the total number of waveforms and M>0 be the number of waveforms defined from CSV files. Then the index
+    # of the waveform to be replaced is defined as following:
+    # - 0,...,M-1 for all waveforms defined from CSV file alphabetically ordered by filename,
+    # - M,...,N-1 in the order that the waveforms are defined in the sequencer program.
+    # For the case of M=0, the index is defined as:
+    # - 0,...,N-1 in the order that the waveforms are defined in the sequencer program.
+    # Of course, for the trivial case of 1 waveform, use index=0 to replace it.
+    # The list of waves given in the Waveform sub-tab of the AWG Sequencer tab can be used to help verify the index of
+    # the waveform to be replaced.
+    # Here we replace waveform w3, the 4th waveform defined in the sequencer program. Using 0-based indexing the
+    # index of the waveform we want to replace (w3, a vector of zeros) is 3:
+    # index of the waveform we want to replace (w3, a vector of zeros) is 3:
+    index = 3
+    waveform_native = zhinst.utils.convert_awg_waveform(waveform_3)
+    path = '/{:s}/awgs/0/waveform/waves/{:d}'.format(device, index)
+    daq.setVector(path, waveform_native)
 
     print("Enabling the AWG: Set /{}/awgs/0/userregs/0 to 1 to trigger waveform playback.".format(device))
     # This is the preferred method of using the AWG: Run in single mode continuous waveform playback is best achieved by

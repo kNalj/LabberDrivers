@@ -12,7 +12,7 @@ from __future__ import print_function
 import time
 import numpy as np
 import zhinst.utils
-import zhinst.examples.common
+from .example_autoranging_impedance import run_example as run_autoranging_example
 
 
 def run_example(device_id, do_plot=False):
@@ -44,7 +44,7 @@ def run_example(device_id, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -67,7 +67,7 @@ def run_example(device_id, do_plot=False):
 
     # We use the auto-range example to perform some basic device configuration
     # and wait until signal input ranges have been configured by the device.
-    zhinst.examples.common.example_autoranging_impedance.run_example(device)
+    run_autoranging_example(device)
 
     # Subscribe to the impedance sample node path.
     imp_index = 0
@@ -105,34 +105,34 @@ def run_example(device_id, do_plot=False):
     # Access the impedance sample using the node's path. For more information
     # see the data structure documentation for ZIImpedanceSample in the LabOne
     # Programming Manual.
-    impedanceSample = data[path]
+    impedance_sample = data[path]
 
     # Get the sampling rate of the device's ADCs, the device clockbase in order
     # to convert the sample's timestamps to seconds.
     clockbase = float(daq.getInt('/%s/clockbase' % device))
 
-    dt_seconds = (impedanceSample['timestamp'][-1] - impedanceSample['timestamp'][0])/clockbase
-    num_samples = len(impedanceSample['timestamp'])
+    dt_seconds = (impedance_sample['timestamp'][-1] - impedance_sample['timestamp'][0])/clockbase
+    num_samples = len(impedance_sample['timestamp'])
     print("poll() returned {} samples of impedance data spanning {:.3f} seconds.".format(num_samples, dt_seconds))
-    print("Average measured resitance: {} Ohm.".format(np.mean(impedanceSample['param0'])))
-    print("Average measured capacitance: {} F.".format(np.mean(impedanceSample['param1'])))
+    print("Average measured resitance: {} Ohm.".format(np.mean(impedance_sample['param0'])))
+    print("Average measured capacitance: {} F.".format(np.mean(impedance_sample['param1'])))
 
     if do_plot:
         import matplotlib.pyplot as plt
 
         # Convert timestamps from ticks to seconds via clockbase.
-        t = (impedanceSample['timestamp'] - impedanceSample['timestamp'][0])/clockbase
+        t = (impedance_sample['timestamp'] - impedance_sample['timestamp'][0])/clockbase
 
         plt.close('all')
         # Create plot
         _, ax = plt.subplots(2, sharex=True)
-        ax[0].plot(t, impedanceSample['param0'])
+        ax[0].plot(t, impedance_sample['param0'])
         ax[0].set_title('Impedance Parameters')
         ax[0].grid(True)
         ax[0].set_ylabel(r'Resistance ($\Omega$)')
         ax[0].autoscale(enable=True, axis='x', tight=True)
 
-        ax[1].plot(t, impedanceSample['param1'])
+        ax[1].plot(t, impedance_sample['param1'])
         ax[1].grid(True)
         ax[1].set_ylabel(r'Capacitance (F)')
         ax[1].set_xlabel('Time (s)')

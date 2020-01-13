@@ -67,7 +67,7 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -134,12 +134,12 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     daq.sync()
 
     # Create an instance of the Data Acquisition Module.
-    trigger = daq.dataAcquisitionModule()
+    daq_module = daq.dataAcquisitionModule()
 
     # Set the device that will be used for the trigger - this parameter must be set.
-    trigger.set('dataAcquisitionModule/device', device)
+    daq_module.set('device', device)
     # We will trigger on a positive edge of a demodulator sample R value.
-    # dataAcquisitionModule/type (int):
+    # type (int):
     #   NO_TRIGGER = 0
     #   EDGE_TRIGGER = 1
     #   DIGITAL_TRIGGER = 2
@@ -148,8 +148,8 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     #   HW_TRIGGER = 6
     #   TRACKING_PULSE_TRIGGER = 7
     #   EVENT_COUNT_TRIGGER = 8
-    trigger.set('dataAcquisitionModule/type', 1)
-    # dataAcquisitionModule/triggernode (char):
+    daq_module.set('type', 1)
+    # triggernode (char):
     #   Specify the trigger signal to trigger on. The trigger signal comprises
     #   of a device node path appended with a trigger field seperated by a dot.
     #   For demodulator samples, the following trigger fields are available:
@@ -168,23 +168,23 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     #   SAMPLE.TRIGAWGTRIGN = AWG Trigger N  (where supported)
     triggerpath = '/%s/demods/%d/sample.r' % (device, trigger_demod_index)
     triggernode = triggerpath
-    trigger.set('dataAcquisitionModule/triggernode', triggernode)
-    # dataAcquisitionModule/edge (int):
+    daq_module.set('triggernode', triggernode)
+    # edge (int):
     #   Specify which edge type to trigger on.
     #   POS_EDGE = 1
     #   NEG_EDGE = 2
     #   BOTH_EDGE = 3
-    trigger.set('dataAcquisitionModule/edge', 1)
-    # Note: We do not manually set dataAcquisitionModule/level and dataAcquisitionModule/hysteresis in
-    # this example, rather we set the dataAcquisitionModule/findlevel parameter to 1 and let
+    daq_module.set('edge', 1)
+    # Note: We do not manually set level and hysteresis in
+    # this example, rather we set the findlevel parameter to 1 and let
     # the Data Acquisition Module determine an appropriate level and hysteresis for us.
     #
-    # dataAcquisitionModule/level (double):
+    # level (double):
     # The set the trigger level.
     # trigger_level = 0.70
-    # trigger.set('dataAcquisitionModule/level', trigger_level)
+    # daq_module.set('level', trigger_level)
     #
-    # dataAcquisitionModule/hysteresis (double):
+    # hysteresis (double):
     #   The hysterisis is effectively a second criteria (if non-zero) for
     #   triggering and makes triggering more robust in noisy signals. When the
     #   trigger `level` is violated, then the signal must return beneath (for
@@ -194,19 +194,19 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     # than trigger_duration.
     trigger_duration = 0.010
     # The length of time to record the data for each time we trigger.
-    trigger.set('dataAcquisitionModule/duration', trigger_duration)
+    daq_module.set('duration', trigger_duration)
     trigger_delay = -0.25*trigger_duration
-    trigger.set('dataAcquisitionModule/delay', trigger_delay)
+    daq_module.set('delay', trigger_delay)
     # Do not return overlapped trigger events.
-    trigger.set('dataAcquisitionModule/holdoff/time', trigger_duration)
-    trigger.set('dataAcquisitionModule/holdoff/count', 0)
+    daq_module.set('holdoff/time', trigger_duration)
+    daq_module.set('holdoff/count', 0)
 
-    # Unrequired parameters when dataAcquisitionModule/type is EDGE_TRIGGER:
-    # trigger.set('dataAcquisitionModule/bitmask', 1)  % For DIGITAL_TRIGGER
-    # trigger.set('dataAcquisitionModule/bits', 1)  % For DIGITAL_TRIGGER
-    # trigger.set('dataAcquisitionModule/bandwidth', 10)  % For TRACKING_TRIGGER
+    # Unrequired parameters when type is EDGE_TRIGGER:
+    # daq_module.set('bitmask', 1)  % For DIGITAL_TRIGGER
+    # daq_module.set('bits', 1)  % For DIGITAL_TRIGGER
+    # daq_module.set('bandwidth', 10)  % For TRACKING_TRIGGER
 
-    # 'dataAcquisitionModule/grid/mode' - Specify the interpolation method of
+    # 'grid/mode' - Specify the interpolation method of
     #   the returned data samples.
     #
     # 1 = Nearest. If the interval between samples on the grid does not match
@@ -222,23 +222,23 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     #     from the device) defines the interval between samples on the DAQ
     #     Module's grid. If multiple signals are subscribed, these are
     #     interpolated onto the grid (defined by the signal with the highest
-    #     rate, "highest_rate"). In this mode, dataAcquisitionModule/duration is
+    #     rate, "highest_rate"). In this mode, duration is
     #     read-only and is defined as num_cols/highest_rate.
-    trigger.set('dataAcquisitionModule/grid/mode', 2)
-    # dataAcquisitionModule/grid/repetitions (int)
+    daq_module.set('grid/mode', 2)
+    # grid/repetitions (int)
     #   The number of times to average.
-    trigger.set('dataAcquisitionModule/grid/repetitions', 1)
-    # dataAcquisitionModule/grid/cols (int)
+    daq_module.set('grid/repetitions', 1)
+    # grid/cols (int)
     #   Specify the number of columns in the grid's matrix. The data from each
     #     row is interpolated onto a grid with the specified number of columns.
     num_cols = 500
-    trigger.set('dataAcquisitionModule/grid/cols', num_cols)
-    # dataAcquisitionModule/grid/rows (int)
+    daq_module.set('grid/cols', num_cols)
+    # grid/rows (int)
     #   Specify the number of rows in the grid's matrix. Each row is the data
     #   recorded from one trigger.
     num_rows = 500
-    trigger.set('dataAcquisitionModule/grid/rows', 500)
-    # dataAcquisitionModule/grid/direction (int)
+    daq_module.set('grid/rows', 500)
+    # grid/direction (int)
     #   Specify the ordering of the data stored in the grid's matrix.
     #     0: Forward - the data in each row is ordered chronologically, e.g., the
     #       first data point in each row corresponds to the first timestamp in the
@@ -248,13 +248,13 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     #       timestamp in the trigger data.
     #     2: Bidirectional - the ordering of the data alternates between Forward
     #        and Backward ordering from row-to-row. The first row is Forward ordered.
-    trigger.set('dataAcquisitionModule/grid/direction', 0)
+    daq_module.set('grid/direction', 0)
 
     # The number of grids to record (if not running in endless mode).
-    # In grid mode, we will obtain dataAcquisitionModule/count grids. The total
-    # number of triggers is equal to n = dataAcquisitionModule/count *
-    # dataAcquisitionModule/grid/rows * dataAcquisitionModule/grid/repetitions
-    trigger.set('dataAcquisitionModule/count', num_grids)
+    # In grid mode, we will obtain count grids. The total
+    # number of triggers is equal to n = count *
+    # grid/rows * grid/repetitions
+    daq_module.set('count', num_grids)
 
     # We will perform intermediate reads from the module. When a grid is
     # complete and read() is called, the data is removed from the module. We
@@ -270,13 +270,13 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     # case additionally subscribe to a PID's error. Note, PID streaming nodes
     # not available on HF2 instruments.
     if pid_error_stream_path.upper() in node_paths:
-        trigger.subscribe(pid_error_stream_path)
+        daq_module.subscribe(pid_error_stream_path)
         daq.setDouble('/%s/pids/0/stream/rate' % device, 30e3)
         data[pid_error_stream_path] = []
     # Note: We subscribe to the trigger signal path last to ensure that we obtain
     # complete data on the other paths (known limitation). We must subscribe to
     # the trigger signal path.
-    trigger.subscribe(triggerpath)
+    daq_module.subscribe(triggerpath)
 
     if do_plot:
         import matplotlib.pyplot as plt
@@ -302,34 +302,33 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
         plt.ion()
 
     # Arm the Data Acquisition Module: ready for trigger acquisition.
-    trigger.execute()
+    daq_module.execute()
     # Tell the Data Acquisition Module to determine the trigger level.
-    trigger.set('dataAcquisitionModule/findlevel', 1)
+    daq_module.set('findlevel', 1)
     findlevel = 1
     timeout = 10  # [s]
     t0 = time.time()
     while findlevel == 1:
         time.sleep(0.05)
-        findlevel = trigger.getInt('dataAcquisitionModule/findlevel')
+        findlevel = daq_module.getInt('findlevel')
         if time.time() - t0 > timeout:
-            trigger.finish()
-            trigger.clear()
+            daq_module.finish()
             raise RuntimeError("Data Acquisition Module didn't find trigger level after %.3f seconds." % timeout)
-    level = trigger.getDouble('dataAcquisitionModule/level')
-    hysteresis = trigger.getDouble('dataAcquisitionModule/hysteresis')
-    print("Data Acquisition Module found and set dataAcquisitionModule/level: {},".format(level),
-          "dataAcquisitionModule/hysteresis: {}.".format(hysteresis))
+    level = daq_module.getDouble('level')
+    hysteresis = daq_module.getDouble('hysteresis')
+    print("Data Acquisition Module found and set level: {},".format(level),
+          "hysteresis: {}.".format(hysteresis))
 
     flags = 0
     return_flat_data_dict = True
     num_finished_grids = 0
     timeout = 120  # [s]
     t0 = time.time()
-    while not trigger.finished():
+    while not daq_module.finished():
         # Read out the intermediate data captured by the Data Acquisition Module.
-        data_read = trigger.read(return_flat_data_dict)
+        data_read = daq_module.read(return_flat_data_dict)
         if (triggerpath in data_read) and data_read[triggerpath]:
-            # Note, if dataAcquisitionModule/count > 1 then more than one grid could be returned.
+            # Note, if 'count' > 1 then more than one grid could be returned.
             num_grids_read = len(data_read[triggerpath])
             for i in range(num_grids_read):
                 flags = data_read[triggerpath][i]['header']['flags']
@@ -343,7 +342,7 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
                         # We only get PID data if the (non-HF2) device has the PID Option.
                         data[pid_error_stream_path].append(data_read[pid_error_stream_path][i])
             print('Overall progress: {}. Grid {} flags: {}.'.format(
-                trigger.progress()[0], num_finished_grids, flags[0]))
+                daq_module.progress()[0], num_finished_grids, flags[0]))
             if do_plot:
                 # Visualize the last grid's demodulator data (the demodulator used as
                 # the trigger path) from the intermediate read(). Plot the updated
@@ -361,19 +360,17 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
             if num_finished_grids == 0:
                 # If we didn't even get one grid, stop the module, delete its
                 # thread and raise an error.
-                trigger.finish()
-                trigger.clear()
+                daq_module.finish()
                 raise RuntimeError("Failed to record any grids before timeout ({} seconds). ".format(timeout))
-            else:
-                print('Recorded {} grids. Loop timed-out after {} s before acquiring all {} grids.'.format(
-                    num_finished_grids, timeout, num_grids))
-                break
+            print('Recorded {} grids. Loop timed-out after {} s before acquiring all {} grids.'.format(
+                num_finished_grids, timeout, num_grids))
+            break
 
     if not flags & 1:
         # The Data Acquisition Module finished recording since performing the previous intermediate
         # read() in the loop: Do another read() to get the final data.
         print("Data Acquisition Module finished since last intermediate read() in loop, reading out finished grid(s).")
-        data_read = trigger.read(return_flat_data_dict)
+        data_read = daq_module.read(return_flat_data_dict)
         num_grids_read = len(data_read[triggerpath])
         for i in range(num_grids_read):
             flags = data_read[triggerpath][i]['header']['flags']
@@ -387,11 +384,8 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
                 img.autoscale()
                 plt.draw()
 
-    # Stop the Module (this is also ok if trigger.finished() is True).
-    trigger.finish()
-
-    # Stop the Module's thread and clear the memory.
-    trigger.clear()
+    # Stop the Module (this is also ok if daq_module.finished() is True).
+    daq_module.finish()
 
     if do_plot:
         plt.ioff()

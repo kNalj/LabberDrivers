@@ -19,7 +19,7 @@ import zhinst.utils
 def run_example(device_id, do_plot=False):
     """
     Run the example: Connect to a Zurich Instruments UHF Lock-in Amplifier or
-    UHFAWG, upload and run a basic AWG sequence program. It then demonstrates
+    UHFAWG, UHFQA, upload and run a basic AWG sequence program. It then demonstrates
     how to upload (replace) a waveform without changing the sequencer program.
 
     Requirements:
@@ -47,7 +47,7 @@ def run_example(device_id, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -56,13 +56,13 @@ def run_example(device_id, do_plot=False):
 
     # Settings
     apilevel_example = 6  # The API level supported by this example.
-    err_msg = "This example can only be ran on either a UHFAWG or a UHF with the AWG option enabled."
+    err_msg = "This example can only be ran on either a UHFAWG, UHFQA or a UHF with the AWG option enabled."
     # Call a zhinst utility function that returns:
     # - an API session `daq` in order to communicate with devices via the data server.
     # - the device ID string that specifies the device branch in the server's node hierarchy.
     # - the device's discovery properties.
-    (daq, device, _) = zhinst.utils.create_api_session(device_id, apilevel_example, required_devtype='UHF',
-                                                       required_options=['AWG'], required_err_msg=err_msg)
+    (daq, device, props) = zhinst.utils.create_api_session(device_id, apilevel_example, required_devtype='UHF',
+                                                           required_options=['AWG'], required_err_msg=err_msg)
     zhinst.utils.api_server_version_check(daq)
 
     # Create a base configuration: Disable all available outputs, awgs, demods, scopes,...
@@ -73,7 +73,7 @@ def run_example(device_id, do_plot=False):
     # changed if the instrument has multiple input/output channels and/or either
     # the Multifrequency or Multidemodulator options installed.
     out_channel = 0
-    out_mixer_channel = 3
+    out_mixer_channel = zhinst.utils.default_output_mixer_channel(props, out_channel)
     in_channel = 0
     osc_index = 0
     awg_channel = 0
@@ -139,21 +139,24 @@ def run_example(device_id, do_plot=False):
     waveform_1 = np.exp(-(np.linspace(-AWG_N/2, AWG_N/2, AWG_N))**2/(2*width**2))
 
     # Define an array of values that are used to generate wave w2
-    waveform_2 = np.sin(np.linspace(0, 2*np.pi, AWG_N))
+    waveform_2 = np.sin(np.linspace(0, 2*np.pi, 96))
 
     # Fill the waveform values into the predefined program by inserting the array
-    # as comma-separated floating-point numbers into awg_program
+    # as comma-separated floating-point numbers into awg_program.
+    # Warning: Defining waveforms with the vect function can increase the code size
+    #          considerably and should be used for short waveforms only.
     awg_program = awg_program.replace('_w2_', ','.join([str(x) for x in waveform_2]))
-    # Do the same with the integer constant AWG_N
+
+    # Replace the placeholder with the integer constant AWG_N.
     awg_program = awg_program.replace('_c1_', str(AWG_N))
 
     # Create an instance of the AWG Module
     awgModule = daq.awgModule()
-    awgModule.set('awgModule/device', device)
+    awgModule.set('device', device)
     awgModule.execute()
 
     # Get the modules data directory
-    data_dir = awgModule.getString('awgModule/directory')
+    data_dir = awgModule.getString('directory')
     # All CSV files within the waves directory are automatically recognized by the AWG module
     wave_dir = os.path.join(data_dir, "awg", "waves")
     if not os.path.isdir(wave_dir):
@@ -165,42 +168,51 @@ def run_example(device_id, do_plot=False):
     np.savetxt(csv_file, waveform_0)
 
     # Transfer the AWG sequence program. Compilation starts automatically.
-    awgModule.set('awgModule/compiler/sourcestring', awg_program)
+    awgModule.set('compiler/sourcestring', awg_program)
     # Note: when using an AWG program from a source file (and only then), the compiler needs to
-    # be started explicitly with awgModule.set('awgModule/compiler/start', 1)
-    while awgModule.getInt('awgModule/compiler/status') == -1:
+    # be started explicitly with awgModule.set('compiler/start', 1)
+    while awgModule.getInt('compiler/status') == -1:
         time.sleep(0.1)
 
-    if awgModule.getInt('awgModule/compiler/status') == 1:
+    if awgModule.getInt('compiler/status') == 1:
         # compilation failed, raise an exception
-        raise Exception(awgModule.getString('awgModule/compiler/statusstring'))
-    else:
-        if awgModule.getInt('awgModule/compiler/status') == 0:
-            print("Compilation successful with no warnings, will upload the program to the instrument.")
-        if awgModule.getInt('awgModule/compiler/status') == 2:
-            print("Compilation successful with warnings, will upload the program to the instrument.")
-            print("Compiler warning: ",
-                  awgModule.getString('awgModule/compiler/statusstring'))
-        # wait for waveform upload to finish
-        i = 0
-        while awgModule.getDouble('awgModule/progress') < 1.0:
-            print("{} awgModule/progress: {}".format(i, awgModule.getDouble('awgModule/progress')))
-            time.sleep(0.5)
-            i += 1
-        print("{} awgModule/progress: {}".format(i, awgModule.getDouble('awgModule/progress')))
+        raise Exception(awgModule.getString('compiler/statusstring'))
+    if awgModule.getInt('compiler/status') == 0:
+        print("Compilation successful with no warnings, will upload the program to the instrument.")
+    if awgModule.getInt('compiler/status') == 2:
+        print("Compilation successful with warnings, will upload the program to the instrument.")
+        print("Compiler warning: ", awgModule.getString('compiler/statusstring'))
+
+    # Wait for the waveform upload to finish
+    time.sleep(0.2)
+    i = 0
+    while (awgModule.getDouble('progress') < 1.0) and (awgModule.getInt('elf/status') != 1):
+        print("{} progress: {:.2f}".format(i, awgModule.getDouble('progress')))
+        time.sleep(0.5)
+        i += 1
+    print("{} progress: {:.2f}".format(i, awgModule.getDouble('progress')))
+    if awgModule.getInt('elf/status') == 0:
+        print("Upload to the instrument successful.")
+    if awgModule.getInt('elf/status') == 1:
+        raise Exception("Upload to the instrument failed.")
+
     # Replace the waveform w3 with a new one.
     waveform_3 = np.sinc(np.linspace(-6*np.pi, 6*np.pi, AWG_N))
-    # The following command defines the waveform to replace.
-    # In case a single waveform is used, use index = 0.
-    # In case multiple waveforms are used, the index (0, 1, 2, ...) should correspond to the position of the waveform
-    # in the Waveforms sub-tab of the AWG tab (here index = 1).
-    index = 2
-    daq.setInt('/' + device + '/awgs/0/waveform/index', index)
-    daq.sync()
-    # Write the waveform to the memory. For the transferred array, floating-point (-1.0...+1.0)
-    # as well as integer (-32768...+32768) data types are accepted.
-    # For dual-channel waves, interleaving is required.
-    daq.vectorWrite('/' + device + '/awgs/0/waveform/data', waveform_3)
+    # Let N be the total number of waveforms and M>0 be the number of waveforms defined from CSV files. Then the index
+    # of the waveform to be replaced is defined as following:
+    # - 0,...,M-1 for all waveforms defined from CSV file alphabetically ordered by filename,
+    # - M,...,N-1 in the order that the waveforms are defined in the sequencer program.
+    # For the case of M=0, the index is defined as:
+    # - 0,...,N-1 in the order that the waveforms are defined in the sequencer program.
+    # Of course, for the trivial case of 1 waveform, use index=0 to replace it.
+    # The list of waves given in the Waveform sub-tab of the AWG Sequencer tab can be used to help verify the index of
+    # the waveform to be replaced.
+    # Here we replace waveform w3, the 4th waveform defined in the sequencer program. Using 0-based indexing the
+    # index of the waveform we want to replace (w3, a vector of zeros) is 3:
+    index = 3
+    waveform_native = zhinst.utils.convert_awg_waveform(waveform_3)
+    path = '/{:s}/awgs/0/waveform/waves/{:d}'.format(device, index)
+    daq.setVector(path, waveform_native)
 
     # Configure the Scope for measurement
     # 'channels/0/inputselect' : the input channel for the scope:
@@ -219,7 +231,7 @@ def run_example(device_id, do_plot=False):
     # Disable the scope.
     daq.setInt('/%s/scopes/0/enable' % device, 0)
     # Configure the length of the scope shot.
-    daq.setInt('/%s/scopes/0/length' % device, 10000)
+    daq.setInt('/%s/scopes/0/length' % device, 8000)
     # Now configure the scope's trigger to get aligned data
     # 'trigenable' : enable the scope's trigger (boolean).
     daq.setInt('/%s/scopes/0/trigenable' % device, 1)
@@ -259,7 +271,7 @@ def run_example(device_id, do_plot=False):
 
     # Set up the Scope Module.
     scopeModule = daq.scopeModule()
-    scopeModule.set('scopeModule/mode', 1)
+    scopeModule.set('mode', 1)
     scopeModule.subscribe('/' + device + '/scopes/0/wave')
     daq.setInt('/%s/scopes/0/single' % device, 1)
 
@@ -285,7 +297,7 @@ def run_example(device_id, do_plot=False):
     while (records < 1) and (local_timeout > 0):
         time.sleep(0.1)
         local_timeout -= 0.1
-        records = scopeModule.getInt("scopeModule/records")
+        records = scopeModule.getInt("records")
 
     # Disable the scope.
     daq.setInt('/%s/scopes/0/enable' % device, 0)
@@ -306,7 +318,7 @@ def run_example(device_id, do_plot=False):
     # Compare expected and measured signal
     full_scale = 0.75
     y_expected = np.concatenate((waveform_0, waveform_1, waveform_2, waveform_3))*full_scale*amplitude
-    x_expected = np.linspace(0, 4*AWG_N/f_s, 4*AWG_N)
+    x_expected = np.linspace(0, len(y_expected)/f_s, len(y_expected))
 
     # Correlate measured and expected signal
     corr_meas_expect = np.correlate(y_measured, y_expected)

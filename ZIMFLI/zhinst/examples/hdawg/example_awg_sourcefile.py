@@ -17,7 +17,7 @@ import zhinst.utils
 # This is only used if this example is ran without the awg_sourcefile
 # parameter: To ensure that we have a .seqc source file to use in this example,
 # we write this to disk and then compile this file.
-source = textwrap.dedent("""// Define an integer constant
+SOURCE = textwrap.dedent("""// Define an integer constant
     const N = 4096;
     // Create two Gaussian pulses with length N points,
     // amplitude +1.0 (-1.0), center at N/2, and a width of N/8
@@ -51,7 +51,7 @@ def run_example(device_id, awg_sourcefile=None):
       awg_sourcefile (str, optional): Specify an AWG sequencer file to compile
         and upload. This file must exist in the AWG source sub-folder of your
         LabOne data directory (this location is provided by the
-        awgModule/directory parameter). The source folder must not be included;
+        directory parameter). The source folder must not be included;
         specify the filename only with extension.
 
     Raises:
@@ -60,7 +60,7 @@ def run_example(device_id, awg_sourcefile=None):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -87,15 +87,15 @@ def run_example(device_id, awg_sourcefile=None):
     #   1 : 2x4 with HDAWG8; 1x4 with HDAWG4.
     #   2 : 1x8 with HDAWG8.
     # Configure the HDAWG to use one sequencer with the same waveform on all output channels.
-    daq.setInt('/{}/system/awg/channelgrouping'.format(device), 2)
+    daq.setInt('/{}/system/awg/channelgrouping'.format(device), 1)
 
     # Create an instance of the AWG Module
     awgModule = daq.awgModule()
-    awgModule.set('awgModule/device', device)
+    awgModule.set('device', device)
     awgModule.execute()
 
-    # Get the LabOne user data directory.
-    data_dir = awgModule.getString('awgModule/directory')
+    # Get the LabOne user data directory (this is read-only).
+    data_dir = awgModule.getString('directory')
     # The AWG Tab in the LabOne UI also uses this directory for AWG seqc files.
     src_dir = os.path.join(data_dir, "awg", "src")
     if not os.path.isdir(src_dir):
@@ -108,7 +108,7 @@ def run_example(device_id, awg_sourcefile=None):
         # Write an AWG source file to disk that we can compile in this example.
         awg_sourcefile = "ziPython_example_awg_sourcefile.seqc"
         with open(os.path.join(src_dir, awg_sourcefile), "w") as f:
-            f.write(source)
+            f.write(SOURCE)
     else:
         if not os.path.exists(os.path.join(src_dir, awg_sourcefile)):
             raise Exception("The file {} does not exist, this must be specified via an "
@@ -117,33 +117,38 @@ def run_example(device_id, awg_sourcefile=None):
     print("Will compile and load", awg_sourcefile, "from", src_dir)
 
     # Transfer the AWG sequence program. Compilation starts automatically.
-    awgModule.set('awgModule/compiler/sourcefile', awg_sourcefile)
+    awgModule.set('compiler/sourcefile', awg_sourcefile)
     # Note: when using an AWG program from a source file (and only then), the compiler needs to
     # be started explicitly:
-    awgModule.set('awgModule/compiler/start', 1)
+    awgModule.set('compiler/start', 1)
     timeout = 20
     t0 = time.time()
-    while awgModule.getInt('awgModule/compiler/status') == -1:
+    while awgModule.getInt('compiler/status') == -1:
         time.sleep(0.1)
         if time.time() - t0 > timeout:
             Exception("Timeout")
 
-    if awgModule.getInt('awgModule/compiler/status') == 1:
+    if awgModule.getInt('compiler/status') == 1:
         # compilation failed, raise an exception
-        raise Exception(awgModule.getString('awgModule/compiler/statusstring'))
-    else:
-        if awgModule.getInt('awgModule/compiler/status') == 0:
-            print("Compilation successful with no warnings, will upload the program to the instrument.")
-        if awgModule.getInt('awgModule/compiler/status') == 2:
-            print("Compilation successful with warnings, will upload the program to the instrument.")
-            print("Compiler warning: ", awgModule.getString('awgModule/compiler/statusstring'))
-        # Wait for the waveform upload to finish
-        time.sleep(0.2)
-        i = 0
-        while awgModule.getDouble('awgModule/progress') < 1.0:
-            print("{} progress: {}".format(i, awgModule.getDouble('awgModule/progress')))
-            time.sleep(0.5)
-            i += 1
+        raise Exception(awgModule.getString('compiler/statusstring'))
+    if awgModule.getInt('compiler/status') == 0:
+        print("Compilation successful with no warnings, will upload the program to the instrument.")
+    if awgModule.getInt('compiler/status') == 2:
+        print("Compilation successful with warnings, will upload the program to the instrument.")
+        print("Compiler warning: ", awgModule.getString('compiler/statusstring'))
+
+    # Wait for the waveform upload to finish
+    time.sleep(0.2)
+    i = 0
+    while (awgModule.getDouble('progress') < 1.0) and (awgModule.getInt('elf/status') != 1):
+        print("{} progress: {:.2f}".format(i, awgModule.getDouble('progress')))
+        time.sleep(0.5)
+        i += 1
+    print("{} progress: {:.2f}".format(i, awgModule.getDouble('progress')))
+    if awgModule.getInt('elf/status') == 0:
+        print("Upload to the instrument successful.")
+    if awgModule.getInt('elf/status') == 1:
+        raise Exception("Upload to the instrument failed.")
 
     print('Success. Enabling the AWG.')
     # This is the preferred method of using the AWG: Run in single mode continuous waveform playback is best achieved by

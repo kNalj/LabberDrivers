@@ -56,7 +56,7 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -117,7 +117,7 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     daq.sync()
 
     # Create an instance of the Data Acquisition Module.
-    trigger = daq.dataAcquisitionModule()
+    daq_module = daq.dataAcquisitionModule()
 
     # Below we will generate num_pulses pulses on the signal outputs in order to
     # demonstrate the triggering functionality. We'll configure the Software
@@ -128,20 +128,20 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
 
     # Configure the Data Acquisition Module.
     # Set the device that will be used for the trigger - this parameter must be set.
-    trigger.set('dataAcquisitionModule/device', device)
+    daq_module.set('device', device)
     # We will trigger on the demodulator sample's R value.
     trigger_path = '/%s/demods/%d/sample.r' % (device, demod_index)
     triggernode = trigger_path
-    trigger.set('dataAcquisitionModule/triggernode', triggernode)
+    daq_module.set('triggernode', triggernode)
     # Use an edge trigger.
-    trigger.set('dataAcquisitionModule/type', 1)  # 1 = edge
+    daq_module.set('type', 1)  # 1 = edge
     # Trigger on the positive edge.
-    trigger.set('dataAcquisitionModule/edge', 1)  # 1 = positive
+    daq_module.set('edge', 1)  # 1 = positive
     # The set the trigger level.
     # Scale by 1/sqrt(2) due to the demodulator's R RMS value.
     trigger_level = 0.5*(sigouts_low + sigouts_high)/np.sqrt(2)
-    print("Setting trigger/0/level to {:.3f}.".format(trigger_level))
-    trigger.set('dataAcquisitionModule/level', trigger_level)
+    print("Setting 0/level to {:.3f}.".format(trigger_level))
+    daq_module.set('level', trigger_level)
     # Set the trigger hysteresis to a percentage of the trigger level: This
     # ensures that triggering is robust in the presence of noise. The trigger
     # becomes armed when the signal passes through the hysteresis value and will
@@ -150,17 +150,17 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     # edge trigger relative to the trigger level (positively for a negative edge
     # trigger).
     trigger_hysteresis = 0.05*trigger_level
-    print("Setting trigger/0/hysteresis {:.3f}.".format(trigger_hysteresis))
-    trigger.set('dataAcquisitionModule/hysteresis', trigger_hysteresis)
+    print("Setting 0/hysteresis {:.3f}.".format(trigger_hysteresis))
+    daq_module.set('hysteresis', trigger_hysteresis)
     # The number of times to trigger.
     trigger_count = int(num_pulses/2)
-    trigger.set('dataAcquisitionModule/count', trigger_count)
-    trigger.set('dataAcquisitionModule/holdoff/count', 0)
-    trigger.set('dataAcquisitionModule/holdoff/time', 0.100)
+    daq_module.set('count', trigger_count)
+    daq_module.set('holdoff/count', 0)
+    daq_module.set('holdoff/time', 0.100)
     trigger_delay = -0.020
-    trigger.set('dataAcquisitionModule/delay', trigger_delay)
+    daq_module.set('delay', trigger_delay)
     demod_rate = daq.getDouble('/%s/demods/%d/rate' % (device, demod_index))
-    # 'dataAcquisitionModule/grid/mode' - Specify the interpolation method of
+    # 'grid/mode' - Specify the interpolation method of
     #   the returned data samples.
     #
     # 1 = Nearest. If the interval between samples on the grid does not match
@@ -176,21 +176,21 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     #     from the device) defines the interval between samples on the DAQ
     #     Module's grid. If multiple signals are subscribed, these are
     #     interpolated onto the grid (defined by the signal with the highest
-    #     rate, "highest_rate"). In this mode, dataAcquisitionModule/duration is
+    #     rate, "highest_rate"). In this mode, duration is
     #     read-only and is defined as num_cols/highest_rate.
-    trigger.set('dataAcquisitionModule/grid/mode', 4)
+    daq_module.set('grid/mode', 4)
     # For an FFT the number of samples needs to be a binary power
     # sample_count = int(demod_rate * trigger_duration)
     sample_count = 2048
     # The duration (the length of time to record each time we trigger) must fit exactly with
     # the number of samples. Otherwise in exact mode, it will be adjusted to fit.
     trigger_duration = sample_count/demod_rate
-    trigger.set('dataAcquisitionModule/duration', trigger_duration)
-    trigger.set('dataAcquisitionModule/grid/cols', sample_count)
-    trigger_duration = trigger.getDouble('dataAcquisitionModule/duration')
+    daq_module.set('duration', trigger_duration)
+    daq_module.set('grid/cols', sample_count)
+    trigger_duration = daq_module.getDouble('duration')
     # The size of the internal buffer used to record triggers (in seconds), this
     # should be larger than trigger_duration.
-    buffer_size = trigger.getInt('dataAcquisitionModule/buffersize')
+    buffer_size = daq_module.getInt('buffersize')
 
     # In this example we obtain the absolute values of the FFT of the quadrature components
     # (x+iy) of the recorded data.
@@ -198,12 +198,12 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     # then subscribing to this path (signal).
     # We could additionally subscribe to other node paths.
     signal_path = '/%s/demods/%d/sample.xiy.fft.abs' % (device, demod_index)
-    filter_path = '/%s/demods/%d/sample.xiy.fft.abs.filter' % (device, demod_index)
-    trigger.subscribe(signal_path)
-    trigger.subscribe(filter_path)
+    filter_compensations_path = '/%s/demods/%d/sample.xiy.fft.abs.filter' % (device, demod_index)
+    daq_module.subscribe(signal_path)
+    daq_module.subscribe(filter_compensations_path)
 
     # Start the Data Acquisition's thread.
-    trigger.execute()
+    daq_module.execute()
     time.sleep(2*buffer_size)
 
     # Generate some pulses on the signal outputs by changing the signal output
@@ -219,11 +219,11 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
         daq.sync()
         time.sleep(0.1)
         # Check and display the progress.
-        progress = trigger.progress()
+        progress = daq_module.progress()
         print("Data Acquisition Module progress (acquiring {:d} triggers): {:.2%}.".format(
             trigger_count, progress[0]), end="\r")
         # Check whether the Data Acquisition Module has finished.
-        if trigger.finished():
+        if daq_module.finished():
             print("\nTrigger is finished.")
             break
     print("")
@@ -233,13 +233,11 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     time.sleep(2*buffer_size)
 
     # Read the Data Acquisition's data, this command can also be executed before
-    # trigger.finished() is True. In that case data recorded up to that point in
+    # daq_module.finished() is True. In that case data recorded up to that point in
     # time is returned and we would still need to issue read() at the end to
     # fetch the rest of the data.
     return_flat_data_dict = True
-    data = trigger.read(return_flat_data_dict)
-    # Stop the Module's thread and clear the memory.
-    trigger.clear()
+    data = daq_module.read(return_flat_data_dict)
 
     # Check that the dictionary returned is non-empty.
     assert data, "read() returned an empty data dictionary, did you subscribe to any paths?"
@@ -247,7 +245,7 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
     # disabled or had rate 0
     assert signal_path in data, "no data recorded: data dictionary has no key `{}`.".format(signal_path)
     samples = data[signal_path]
-    filters = data[filter_path]
+    filter_compensations = data[filter_compensations_path]
     print("Data Acquisition's read() returned {} signal segments.".format(len(samples)))
     assert len(samples) == trigger_count, \
         "Unexpected number of signal segments returned: `{}`. Expected: `{}`.".format(len(samples), trigger_count)
@@ -256,10 +254,9 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
 
         import matplotlib.pyplot as plt
         plt.clf()
-        ii = 0
         # Plot the FFT bins returned by the Data Acquisition.
-        for sample in samples:
-            filter = filters[ii]
+        for index, sample in enumerate(samples):
+            filter_compensation = filter_compensations[index]
             bin_count = len(sample['value'][0])
             bin_resolution = sample['header']['gridcoldelta']
             frequencies = np.arange(bin_count)
@@ -267,16 +264,16 @@ def run_example(device_id, amplitude=0.25, do_plot=False):
             bandwidth = bin_resolution*len(frequencies)
             frequencies = frequencies*bin_resolution - bandwidth/2.0 + bin_resolution/2.0
             rDb = 20*np.log10(sample['value'][0]*np.sqrt(2)/amplitude)
-            rDbCompensated = 20*np.log10((sample['value'][0]/filter['value'][0])*np.sqrt(2)/amplitude)
+            rDb_compensated = 20*np.log10((sample['value'][0]/filter_compensation['value'][0])*np.sqrt(2)/amplitude)
             plt.subplot(211)
             plt.plot(frequencies, rDb)
             plt.subplot(212)
-            plt.plot(frequencies, rDbCompensated)
-            ++ii
+            plt.plot(frequencies, rDb_compensated)
         plt.subplot(211)
         plt.grid(True)
-        plt.title(("Data Acquisition's read() returned {} FFTs\n".format(len(samples)),
-                   "each with {} bins".format(len(samples[0]['value'][0]))))
+        title = "Data Acquisition's read() returned {} FFTs ".format(len(samples)) + \
+                "each with {} bins".format(len(samples[0]['value'][0]))
+        plt.title(title)
         plt.xlabel('Frequency ($Hz$)')
         plt.ylabel('Amplitude R ($dBV$)')
         plt.autoscale(True, 'both', True)

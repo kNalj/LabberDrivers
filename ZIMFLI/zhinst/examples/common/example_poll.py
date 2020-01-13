@@ -49,7 +49,7 @@ def run_example(device_id, amplitude=0.5, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -160,6 +160,8 @@ def run_example(device_id, amplitude=0.5, do_plot=False):
         (dt_seconds_expected, tol_percent)
 
     # Calculate the demodulator's magnitude and phase and add them to the dict.
+	# The phase is returned in units of radian. We can use a keyword for the numpy
+	# angle function to return degree units instead: np.angle( ... , deg=True)
     sample['R'] = np.abs(sample['x'] + 1j*sample['y'])
     sample['phi'] = np.angle(sample['x'] + 1j*sample['y'])
     print("Average measured RMS amplitude is {:.3e} V.".format(np.mean(sample['R'])))

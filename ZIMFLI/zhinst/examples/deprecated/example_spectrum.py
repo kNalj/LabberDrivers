@@ -44,7 +44,7 @@ def run_example(device_id, amplitude=0.1, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -116,22 +116,22 @@ def run_example(device_id, amplitude=0.1, do_plot=False):
 
     # Configure the module's parameters.
     # Set the device that will be used for the spectrum analyser - this parameter must be set.
-    zoomfft.set('zoomFFT/device', device)
+    zoomfft.set('device', device)
     # Select FFT(X + iY).
-    zoomfft.set('zoomFFT/mode', 0)
+    zoomfft.set('mode', 0)
     # Disable overlap mode.
-    zoomfft.set('zoomFFT/overlap', 0)
+    zoomfft.set('overlap', 0)
     # Use a Hann windowing function in the FFT:
     # 0=Rectangular, 1=Hann, 2=Hamming, 3=Blackman Harris,
     # 16=Exponential, 17=Cosine, 18=Cosine squared.
-    zoomfft.set('zoomFFT/window', 1)
+    zoomfft.set('window', 1)
     # Return absolute frequencies instead of relative to 0.
-    zoomfft.set('zoomFFT/absolute', 1)
+    zoomfft.set('absolute', 1)
     # The number of lines is 2**bits.
-    zoomfft.set('zoomFFT/bit', 16)
+    zoomfft.set('bit', 16)
     # The number of zoomFFT's to perform.
     loopcount = 2
-    zoomfft.set('zoomFFT/loopcount', loopcount)
+    zoomfft.set('loopcount', loopcount)
 
     # Now subscribe to the nodes from which data will be recorded. Note, this is
     # not the subscribe from ziDAQServer; it is a Module subscribe. The Spectrum
@@ -171,9 +171,6 @@ def run_example(device_id, amplitude=0.1, do_plot=False):
     return_flat_data_dict = True
     data = zoomfft.read(return_flat_data_dict)
     zoomfft.unsubscribe(path)
-
-    # Stop the module's thread and clear the memory.
-    zoomfft.clear()
 
     # Check that the dictionary returned is non-empty.
     assert data, "read() returned an empty data dictionary, did you subscribe to any paths?"

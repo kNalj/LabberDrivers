@@ -27,7 +27,7 @@ try:
 except ImportError as e:
     # No fallback. No complaints upon importing zhinst.utils, handle/raise
     # exception when the function load_labone_mat() is called.
-    __scipy_import_error = e
+    __SCIPY_IMPORT_ERROR = e
 import numpy as np
 import zhinst.ziPython
 
@@ -198,34 +198,39 @@ def default_output_mixer_channel(discovery_props, output_channel=0):
     """
 
     # The logic below assumes the device type is one of the following.
-    assert discovery_props['devicetype'] in ['HF2IS', 'HF2LI', 'UHFLI', 'UHFAWG', 'MFIA', 'MFLI'], \
+    assert discovery_props['devicetype'] in ['HF2IS', 'HF2LI', 'UHFLI', 'UHFAWG', 'UHFQA', 'MFIA', 'MFLI'], \
         "Unknown device type: {}.".format(discovery_props['devicetype'])
 
-    if re.match('UHF', discovery_props['devicetype']) and ('MF' not in discovery_props['options']):
+    if re.match(r'UHF(LI|AWG)', discovery_props['devicetype']) and ('MF' not in discovery_props['options']):
         if output_channel == 0:
-            output_mixer_channel = 3
-        elif output_channel == 1:
-            output_mixer_channel = 7
-        else:
-            raise Exception("Invalid output channel `{}`, UHF Instruments have two signal "
-                            "ouput channels (0, 1).".format(output_channel))
-    elif re.match('HF2LI', discovery_props['devicetype']) and ('MF' not in discovery_props['options']):
+            return 3
+        if output_channel == 1:
+            return 7
+        raise Exception("Invalid output channel `{}`, UHF Instruments have two signal "
+                        "ouput channels (0, 1).".format(output_channel))
+
+    if re.match(r'UHFQA', discovery_props['devicetype']):
         if output_channel == 0:
-            output_mixer_channel = 6
-        elif output_channel == 1:
-            output_mixer_channel = 7
-        else:
-            raise Exception("Invalid output channel `{}`, HF2 Instruments have two signal output"
-                            "channels (0, 1).".format(output_channel))
-    elif re.match('(MFLI|MFIA)', discovery_props['devicetype']) and ('MD' not in discovery_props['options']):
+            return 0
+        if output_channel == 1:
+            return 1
+        raise Exception("Invalid output channel `{}`, UHF Instruments have two signal "
+                        "ouput channels (0, 1).".format(output_channel))
+
+    if re.match(r'HF2LI', discovery_props['devicetype']) and ('MF' not in discovery_props['options']):
         if output_channel == 0:
-            output_mixer_channel = 1
-        else:
-            raise Exception("Invalid output channel `{}`, MF Instruments have one signal output channel (0)."
-                            .format(output_channel))
-    else:
-        output_mixer_channel = 0
-    return output_mixer_channel
+            return 6
+        if output_channel == 1:
+            return 7
+        raise Exception("Invalid output channel `{}`, HF2 Instruments have two signal output"
+                        "channels (0, 1).".format(output_channel))
+
+    if re.match(r'(MFLI|MFIA)', discovery_props['devicetype']) and ('MD' not in discovery_props['options']):
+        if output_channel == 0:
+            return 1
+        raise Exception("Invalid output channel `{}`, MF Instruments have one signal output channel (0)."
+                        .format(output_channel))
+    return 0
 
 
 def autoDetect(daq, exclude=None):
@@ -482,7 +487,7 @@ def get_default_settings_path(daq):
       settings_path (str): The default ziDeviceSettings path.
     """
     device_settings = daq.deviceSettings()
-    settings_path = device_settings.get('deviceSettings/path')['path'][0]
+    settings_path = device_settings.get('path')['path'][0]
     device_settings.clear()
     return settings_path
 
@@ -522,13 +527,13 @@ def load_settings(daq, device, filename):
     path, filename = os.path.split(filename)
     filename_noext = os.path.splitext(filename)[0]
     device_settings = daq.deviceSettings()
-    device_settings.set('deviceSettings/device', device)
-    device_settings.set('deviceSettings/filename', filename_noext)
+    device_settings.set('device', device)
+    device_settings.set('filename', filename_noext)
     if path:
-        device_settings.set('deviceSettings/path', path)
+        device_settings.set('path', path)
     else:
-        device_settings.set('deviceSettings/path', '.' + os.sep)
-    device_settings.set('deviceSettings/command', 'load')
+        device_settings.set('path', '.' + os.sep)
+    device_settings.set('command', 'load')
     try:
         device_settings.execute()
         t0 = time.time()
@@ -578,13 +583,13 @@ def save_settings(daq, device, filename):
     path, filename = os.path.split(filename)
     filename_noext = os.path.splitext(filename)[0]
     device_settings = daq.deviceSettings()
-    device_settings.set('deviceSettings/device', device)
-    device_settings.set('deviceSettings/filename', filename_noext)
+    device_settings.set('device', device)
+    device_settings.set('filename', filename_noext)
     if path:
-        device_settings.set('deviceSettings/path', path)
+        device_settings.set('path', path)
     else:
-        device_settings.set('deviceSettings/path', '.' + os.sep)
-    device_settings.set('deviceSettings/command', 'save')
+        device_settings.set('path', '.' + os.sep)
+    device_settings.set('command', 'save')
     try:
         device_settings.execute()
         t0 = time.time()
@@ -733,7 +738,7 @@ def load_labone_mat(filename):
     except (NameError, AttributeError):
         print("\n\n *** Please install the ``scipy`` package and verify you can use scipy.io.loadmat() "
               "in order to use zhinst.utils.load_labone_mat. *** \n\n")
-        print("Whilst calling import scipy.io an exception was raised with the message: ", str(__scipy_import_error))
+        print("Whilst calling import scipy.io an exception was raised with the message: ", str(__SCIPY_IMPORT_ERROR))
         print("Whilst calling scipy.io.loadmat() the following exception was raised:")
         raise
     except Exception as e:
@@ -968,9 +973,10 @@ def disable_everything(daq, device):
     examples and it's signature or implementation may change in future releases.
     """
     node_branches = daq.listNodes('/{}/'.format(device), 0)
-    if node_branches == ['']:
-        print('Device', device, 'is not connected to the data server.')
     settings = []
+    if node_branches == []:
+        print('Device', device, 'is not connected to the data server.')
+        return settings
 
     if 'AUCARTS' in node_branches:
         settings.append(['/{}/aucarts/*/enable'.format(device), 0])
@@ -983,7 +989,7 @@ def disable_everything(daq, device):
     if 'CNTS' in node_branches:
         settings.append(['/{}/cnts/*/enable'.format(device), 0])
     # CURRINS
-    if daq.listNodes('/{}/currins/0/float'.format(device), 0) != ['']:
+    if daq.listNodes('/{}/currins/0/float'.format(device), 0) != []:
         settings.append(['/{}/currins/*/float'.format(device), 0])
     if 'DIOS' in node_branches:
         settings.append(['/{}/dios/*/drive'.format(device), 0])
@@ -1000,40 +1006,158 @@ def disable_everything(daq, device):
         settings.append(['/{}/imps/*/enable'.format(device), 0])
     if 'INPUTPWAS' in node_branches:
         settings.append(['/{}/inputpwas/*/enable'.format(device), 0])
-    if daq.listNodes('/{}/mods/0/enable'.format(device), 0) != ['']:
+    if daq.listNodes('/{}/mods/0/enable'.format(device), 0) != []:
         # HF2 without the MOD Option has an empty MODS branch.
         settings.append(['/{}/mods/*/enable'.format(device), 0])
     if 'OUTPUTPWAS' in node_branches:
         settings.append(['/{}/outputpwas/*/enable'.format(device), 0])
-    if daq.listNodes('/{}/pids/0/enable'.format(device), 0) != ['']:
+    if daq.listNodes('/{}/pids/0/enable'.format(device), 0) != []:
         # HF2 without the PID Option has an empty PID branch.
         settings.append(['/{}/pids/*/enable'.format(device), 0])
-    if daq.listNodes('/{}/plls/0/enable'.format(device), 0) != ['']:
+    if daq.listNodes('/{}/plls/0/enable'.format(device), 0) != []:
         # HF2 without the PLL Option still has the PLLS branch.
         settings.append(['/{}/plls/*/enable'.format(device), 0])
     if 'SIGINS' in node_branches:
         settings.append(['/{}/sigins/*/ac'.format(device), 0])
         settings.append(['/{}/sigins/*/imp50'.format(device), 0])
-        sigins_leaves = daq.listNodes('/{}/sigins/0/', 0)
-        for leaf in ['diff', 'float']:
-            if leaf in sigins_leaves:
-                settings.append(['/{}/sigins/*/{}'.format(device, leaf), 0])
+        sigins_children = daq.listNodes('/{}/sigins/0/'.format(device), 0)
+        for leaf in ['DIFF', 'FLOAT']:
+            if leaf in sigins_children:
+                settings.append(['/{}/sigins/*/{}'.format(device, leaf.lower()), 0])
     if 'SIGOUTS' in node_branches:
         settings.append(['/{}/sigouts/*/on'.format(device), 0])
         settings.append(['/{}/sigouts/*/enables/*'.format(device), 0])
         settings.append(['/{}/sigouts/*/offset'.format(device), 0.0])
-        sigouts_leaves = daq.listNodes('/{}/sigouts/0/', 0)
-        for leaf in ['add', 'diff', 'imp50']:
-            if leaf in sigouts_leaves:
-                settings.append(['/{}/sigouts/*/{}'.format(device, leaf), 0])
+        sigouts_children = daq.listNodes('/{}/sigouts/0/'.format(device), 0)
+        for leaf in ['ADD', 'DIFF', 'IMP50']:
+            if leaf in sigouts_children:
+                settings.append(['/{}/sigouts/*/{}'.format(device, leaf.lower()), 0])
+        if 'PRECOMPENSATION' in sigouts_children:
+            settings.append(['/{}/sigouts/*/precompensation/enable'.format(device), 0])
+            settings.append(['/{}/sigouts/*/precompensation/highpass/*/enable'.format(device), 0])
+            settings.append(['/{}/sigouts/*/precompensation/exponentials/*/enable'.format(device), 0])
+            settings.append(['/{}/sigouts/*/precompensation/bounces/*/enable'.format(device), 0])
+            settings.append(['/{}/sigouts/*/precompensation/fir/enable'.format(device), 0])
     if 'SCOPES' in node_branches:
         settings.append(['/{}/scopes/*/enable'.format(device), 0])
-        if daq.listNodes('/{}/scopes/0/segments/enable'.format(device), 0) != ['']:
+        if daq.listNodes('/{}/scopes/0/segments/enable'.format(device), 0) != []:
             settings.append(['/{}/scopes/*/segments/enable'.format(device), 0])
-        if daq.listNodes('/{}/scopes/0/stream/enables/0'.format(device), 0) != ['']:
+        if daq.listNodes('/{}/scopes/0/stream/enables/0'.format(device), 0) != []:
             settings.append(['/{}/scopes/*/stream/enables/*'.format(device), 0])
     if 'TRIGGERS' in node_branches:
         settings.append(['/{}/triggers/out/*/drive'.format(device), 0])
     daq.set(settings)
     daq.sync()
     return settings
+
+
+def convert_awg_waveform(wave1, wave2=None, markers=None):
+    """
+    Converts one or multiple arrays with waveform data to the native AWG
+    waveform format (interleaved waves and markers as uint16).
+
+    Waveform data can be provided as integer (no conversion) or floating point
+    (range -1 to 1) arrays.
+
+    Arguments:
+
+      wave1 (array): Array with data of waveform 1.
+      wave2 (array): Array with data of waveform 2.
+      markers (array): Array with marker data.
+
+    Returns:
+
+      The converted uint16 waveform is returned.
+    """
+    wave2_uint = None
+    marker_uint = None
+    mode = 0
+
+    # Prepare waveforms
+    def uint16_waveform(wave):
+        wave = np.asarray(wave)
+        if np.issubdtype(wave.dtype, np.floating):
+            return np.asarray((np.power(2, 15) - 1) * wave, dtype=np.uint16)
+        return np.asarray(wave, dtype=np.uint16)
+
+    wave1_uint = uint16_waveform(wave1)
+    mode += 1
+
+    if wave2 is not None:
+        if len(wave2) != len(wave1):
+            raise Exception("wave1 and wave2 have different length. They should have the same length.")
+        wave2_uint = uint16_waveform(wave2)
+        mode += 2
+
+    if markers is not None:
+        if len(markers) != len(wave1):
+            raise Exception("wave1 and marker have different length. They should have the same length.")
+        marker_uint = np.array(markers, dtype=np.uint16)
+        mode += 4
+
+    # Merge waveforms
+    waveform_data = None
+    if mode == 1:
+        waveform_data = wave1_uint
+    elif mode == 3:
+        waveform_data = np.vstack((wave1_uint, wave2_uint)).reshape((-2,), order='F')
+    elif mode == 4:
+        waveform_data = marker_uint
+    elif mode == 5:
+        waveform_data = np.vstack((wave1_uint, marker_uint)).reshape((-2,), order='F')
+    elif mode == 6:
+        waveform_data = np.vstack((wave2_uint, marker_uint)).reshape((-2,), order='F')
+    elif mode == 7:
+        waveform_data = np.vstack((wave1_uint, wave2_uint, marker_uint)).reshape((-2,), order='F')
+    else:
+        waveform_data = []
+
+    return waveform_data
+
+
+def parse_awg_waveform(wave_uint, channels=1, markers_present=False):
+    """
+    Converts a received waveform from the AWG waveform node into floating point
+    and separates its contents into the respective waves (2 waveform waves and 1
+    marker wave), depending on the input.
+
+    Arguments:
+
+      wave (array): A uint16 array from the AWG waveform node.
+      channels (int): Number of channels present in the wave.
+      markers_present (bool): Indicates if markers are interleaved in the wave.
+
+    Returns:
+
+      Three separated arrays are returned. The waveforms are scaled to be in the
+      range [-1 and 1]. If no data is present the respective array is empty.
+    """
+
+    from collections import namedtuple
+
+    # convert uint16 to int16
+    wave_int = np.array(wave_uint, dtype=np.int16)
+
+    parsed_waves = namedtuple('deinterleaved_waves', ['wave1', 'wave2', 'markers'])
+
+    wave1 = []
+    wave2 = []
+    markers = []
+
+    interleaved_frames = channels
+    if markers_present:
+        interleaved_frames += 1
+
+    deinterleaved = [wave_int[idx::interleaved_frames] for idx in range(interleaved_frames)]
+
+    deinterleaved[0] = deinterleaved[0]/(np.power(2, 15)-1)
+    if channels == 2:
+        deinterleaved[1] = deinterleaved[1]/(np.power(2, 15)-1)
+
+    wave1 = deinterleaved[0]
+    if channels == 2:
+        wave2 = deinterleaved[1]
+    if markers_present:
+        markers = deinterleaved[-1]
+
+    return parsed_waves(wave1, wave2, markers)

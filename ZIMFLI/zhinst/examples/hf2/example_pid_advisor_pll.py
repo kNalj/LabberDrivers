@@ -92,19 +92,19 @@ def run_example(device_id, do_plot=False):
     # Turn off auto-calc on param change. Enabled
     # auto calculation can be used to automatically
     # update response data based on user input.
-    pidAdvisor.set('pidAdvisor/auto', False)
-    pidAdvisor.set('pidAdvisor/device', device)
-    pidAdvisor.set('pidAdvisor/pid/targetbw', target_bw)
+    pidAdvisor.set('auto', False)
+    pidAdvisor.set('device', device)
+    pidAdvisor.set('pid/targetbw', target_bw)
 
     # PID advising mode (bit coded)
     # bit 0: optimize/tune P
     # bit 1: optimize/tune I
     # bit 2: optimize/tune D
     # Example: mode = 7: Optimize/tune PID
-    pidAdvisor.set('pidAdvisor/pid/mode', 7)
+    pidAdvisor.set('pid/mode', 7)
 
     # PID index to use (first PLL of device: 0)
-    pidAdvisor.set('pidAdvisor/index', pll_index)
+    pidAdvisor.set('index', pll_index)
 
     # DUT model
     # source = 1: Lowpass first order
@@ -114,39 +114,39 @@ def run_example(device_id, do_plot=False):
     # source = 5: VCO
     # source = 6: Resonator amplitude
     dut_source = 4
-    pidAdvisor.set('pidAdvisor/dut/source', dut_source)
+    pidAdvisor.set('dut/source', dut_source)
 
     if dut_source == 4:
         # HF2: Since the PLL and PID are 2 separate hardware units on the device, we need to additionally specify that
         # the PID Advisor should model the HF2's PLL.
-        pidAdvisor.set('pidAdvisor/pid/type', 'pll')
-        # Note: The PID Advisor is appropriate for optimizing the HF2's PLL parameters (pidAdvisor/pid/type set to
-        # 'pll') or the HF2's PID parameters (pidAdvisor/pid/type set to 'pid').
+        pidAdvisor.set('pid/type', 'pll')
+        # Note: The PID Advisor is appropriate for optimizing the HF2's PLL parameters (pid/type set to
+        # 'pll') or the HF2's PID parameters (pid/type set to 'pid').
 
     # IO Delay of the feedback system describing the earliest response
     # for a step change. This parameter does not affect the shape of
     # the DUT transfer function
-    pidAdvisor.set('pidAdvisor/dut/delay', 0.0)
+    pidAdvisor.set('dut/delay', 0.0)
 
     # Other DUT parameters (not required for the internal PLL model)
-    # pidAdvisor.set('pidAdvisor/dut/gain', 1.0)
-    # pidAdvisor.set('pidAdvisor/dut/bw', 1000)
-    # pidAdvisor.set('pidAdvisor/dut/fcenter', 15e6)
-    # pidAdvisor.set('pidAdvisor/dut/damping', 0.1)
-    # pidAdvisor.set('pidAdvisor/dut/q', 10e3)
+    # pidAdvisor.set('dut/gain', 1.0)
+    # pidAdvisor.set('dut/bw', 1000)
+    # pidAdvisor.set('dut/fcenter', 15e6)
+    # pidAdvisor.set('dut/damping', 0.1)
+    # pidAdvisor.set('dut/q', 10e3)
 
     # Start values for the PID optimization. Zero
     # values will imitate a guess. Other values can be
     # used as hints for the optimization process.
-    pidAdvisor.set('pidAdvisor/pid/p', 0)
-    pidAdvisor.set('pidAdvisor/pid/i', 0)
-    pidAdvisor.set('pidAdvisor/pid/d', 0)
+    pidAdvisor.set('pid/p', 0)
+    pidAdvisor.set('pid/i', 0)
+    pidAdvisor.set('pid/d', 0)
 
     # Start the module thread
     pidAdvisor.execute()
 
     # Advise
-    pidAdvisor.set('pidAdvisor/calculate', 1)
+    pidAdvisor.set('calculate', 1)
     print('Starting advising. Optimization process may run up to a minute...')
     calculate = 1
 
@@ -154,7 +154,7 @@ def run_example(device_id, do_plot=False):
     t_timeout = t_start + 90
     while calculate == 1:
         time.sleep(0.1)
-        calculate = pidAdvisor.getInt('pidAdvisor/calculate')
+        calculate = pidAdvisor.getInt('calculate')
         progress = pidAdvisor.progress()
         print("Advisor progress: {:.2%}.".format(progress[0]), end="\r")
         if time.time() > t_timeout:
@@ -164,13 +164,13 @@ def run_example(device_id, do_plot=False):
     print("Advice took {:0.1f} s.".format(time.time() - t_start))
 
     # Get all calculated parameters.
-    result = pidAdvisor.get('pidAdvisor/*', True)
+    result = pidAdvisor.get('*', True)
     # Check that the dictionary returned by poll contains the data that are needed.
     assert result, "pidAdvisor returned an empty data dictionary?"
 
     if result is not None:
         # Now copy the values from the PID Advisor to the device's PLL.
-        pidAdvisor.set('pidAdvisor/todevice', 1)
+        pidAdvisor.set('todevice', 1)
         # Note: On HF2 devices the PLL is an additional hardware entity on the device (it is not combined on the device
         # with the PID), so we need to copy the parameters to the appropriate nodes in the PLLS device branch, not to
         # the PIDS branch.

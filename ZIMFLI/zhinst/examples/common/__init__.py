@@ -11,8 +11,8 @@ import zhinst.examples.common.example_data_acquisition_edge
 import zhinst.examples.common.example_data_acquisition_edge_fft
 import zhinst.examples.common.example_data_acquisition_grid
 import zhinst.examples.common.example_data_acquisition_trackingedge
-import zhinst.examples.common.example_multidevice_sweep
 import zhinst.examples.common.example_multidevice_data_acquisition
+import zhinst.examples.common.example_multidevice_sweep
 import zhinst.examples.common.example_pid_advisor_pll
 import zhinst.examples.common.example_poll
 import zhinst.examples.common.example_poll_impedance

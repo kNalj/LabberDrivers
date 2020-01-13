@@ -48,7 +48,7 @@ def run_example(device_ids, amplitude=0.1, do_plot=False, synchronize=True):
         metainformation about the sweep.
 
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -119,17 +119,17 @@ def run_example(device_ids, amplitude=0.1, do_plot=False, synchronize=True):
     if synchronize:
         print("Synchronizing")
         multiDeviceSyncModule = daq.multiDeviceSyncModule()
-        multiDeviceSyncModule.set('multiDeviceSyncModule/start', 0)
-        multiDeviceSyncModule.set('multiDeviceSyncModule/group', 0)
+        multiDeviceSyncModule.set('start', 0)
+        multiDeviceSyncModule.set('group', 0)
         multiDeviceSyncModule.execute()
-        multiDeviceSyncModule.set('multiDeviceSyncModule/devices', devices)
-        multiDeviceSyncModule.set('multiDeviceSyncModule/start', 1)
+        multiDeviceSyncModule.set('devices', devices)
+        multiDeviceSyncModule.set('start', 1)
 
         timeout = 10
         tstart = time.time()
         while True:
             time.sleep(0.2)
-            status = multiDeviceSyncModule.getInt('multiDeviceSyncModule/status')
+            status = multiDeviceSyncModule.getInt('status')
             assert status != -1, "Error during device sync"
             if status == 2:
                 break
@@ -140,23 +140,23 @@ def run_example(device_ids, amplitude=0.1, do_plot=False, synchronize=True):
     sweeper = daq.sweep()
     # Configure the Sweeper Module's parameters.
     # Set the device that will be used for the sweep - this parameter must be set.
-    sweeper.set('sweep/device', device_ids[0])
+    sweeper.set('device', device_ids[0])
     # Specify the `gridnode`: The instrument node that we will sweep, the device
     # setting corresponding to this node path will be changed by the sweeper.
-    sweeper.set('sweep/gridnode', 'oscs/%d/freq' % osc_index)
+    sweeper.set('gridnode', 'oscs/%d/freq' % osc_index)
     # Set the `start` and `stop` values of the gridnode value interval we will use in the sweep.
-    sweeper.set('sweep/start', 100)
-    sweeper.set('sweep/stop', 500e3)
+    sweeper.set('start', 100)
+    sweeper.set('stop', 500e3)
     # Set the number of points to use for the sweep, the number of gridnode
     # setting values will use in the interval (`start`, `stop`).
     samplecount = 100
-    sweeper.set('sweep/samplecount', samplecount)
+    sweeper.set('samplecount', samplecount)
     # Specify logarithmic spacing for the values in the sweep interval.
-    sweeper.set('sweep/xmapping', 1)
+    sweeper.set('xmapping', 1)
     # Automatically control the demodulator bandwidth/time constants used.
     # 0=manual, 1=fixed, 2=auto
-    # Note: to use manual and fixed, sweep/bandwidth has to be set to a value > 0.
-    sweeper.set('sweep/bandwidthcontrol', 2)
+    # Note: to use manual and fixed, bandwidth has to be set to a value > 0.
+    sweeper.set('bandwidthcontrol', 2)
     # Sets the bandwidth overlap mode (default 0). If enabled, the bandwidth of
     # a sweep point may overlap with the frequency of neighboring sweep
     # points. The effective bandwidth is only limited by the maximal bandwidth
@@ -164,16 +164,16 @@ def run_example(device_ids, amplitude=0.1, do_plot=False, synchronize=True):
     # of the number of sweep points. For frequency response analysis bandwidth
     # overlap should be enabled to achieve maximal sweep speed (default: 0). 0 =
     # Disable, 1 = Enable.
-    sweeper.set('sweep/bandwidthoverlap', 0)
+    sweeper.set('bandwidthoverlap', 0)
 
     # Sequential scanning mode (as opposed to binary or bidirectional).
-    sweeper.set('sweep/scan', 0)
-    # We don't require a fixed sweep/settling/time since there is no DUT
+    sweeper.set('scan', 0)
+    # We don't require a fixed settling/time since there is no DUT
     # involved in this example's setup (only a simple feedback cable), so we set
     # this to zero. We need only wait for the filter response to settle,
-    # specified via sweep/settling/inaccuracy.
-    sweeper.set('sweep/settling/time', 0)
-    # The sweep/settling/inaccuracy' parameter defines the settling time the
+    # specified via settling/inaccuracy.
+    sweeper.set('settling/time', 0)
+    # The settling/inaccuracy' parameter defines the settling time the
     # sweeper should wait before changing a sweep parameter and recording the next
     # sweep data point. The settling time is calculated from the specified
     # proportion of a step response function that should remain. The value
@@ -181,16 +181,15 @@ def run_example(device_ids, amplitude=0.1, do_plot=False, synchronize=True):
     # amplitude measurements. For precise noise measurements it should be set to
     # ~100n.
     # Note: The actual time the sweeper waits before recording data is the maximum
-    # time specified by sweep/settling/time and defined by
-    # sweep/settling/inaccuracy.
-    sweeper.set('sweep/settling/inaccuracy', 0.001)
+    # time specified by settling/time and defined by settling/inaccuracy.
+    sweeper.set('settling/inaccuracy', 0.001)
     # Set the minimum time to record and average data to 10 demodulator
     # filter time constants.
-    sweeper.set('sweep/averaging/tc', 10)
+    sweeper.set('averaging/tc', 10)
     # Minimal number of samples that we want to record and average is 100. Note,
     # the number of samples used for averaging will be the maximum number of
-    # samples specified by either sweep/averaging/tc or sweep/averaging/sample.
-    sweeper.set('sweep/averaging/sample', 10)
+    # samples specified by either averaging/tc or averaging/sample.
+    sweeper.set('averaging/sample', 10)
 
     # Now subscribe to the nodes from which data will be recorded. Note, this is
     # not the subscribe from ziDAQServer; it is a Module subscribe. The Sweeper
@@ -231,9 +230,6 @@ def run_example(device_ids, amplitude=0.1, do_plot=False, synchronize=True):
     for path in paths:
         sweeper.unsubscribe(path)
 
-    # Stop the sweeper thread and clear the memory.
-    sweeper.clear()
-
     # Check the dictionary returned is non-empty.
     assert data, "read() returned an empty data dictionary, did you subscribe to any paths?"
     # Note: data could be empty if no data arrived, e.g., if the demods were
@@ -264,18 +260,17 @@ def run_example(device_ids, amplitude=0.1, do_plot=False, synchronize=True):
 
     if synchronize:
         print("Teardown: Clearing the multiDeviceSyncModule.")
-        multiDeviceSyncModule.set('multiDeviceSyncModule/start', 0)
+        multiDeviceSyncModule.set('start', 0)
         timeout = 2
         tstart = time.time()
         while True:
             time.sleep(0.1)
-            status = multiDeviceSyncModule.getInt('multiDeviceSyncModule/status')
+            status = multiDeviceSyncModule.getInt('status')
             assert status != -1, "Error during device sync stop"
             if status == 0:
                 break
             if time.time() - tstart > timeout:
                 print("Warning: Timeout during device sync stop. The devices might still be synchronized.")
                 break
-        multiDeviceSyncModule.clear()
 
     return data

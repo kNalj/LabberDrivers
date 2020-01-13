@@ -46,7 +46,7 @@ def run_example(device_id, settings_file_path=None):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -62,8 +62,8 @@ def run_example(device_id, settings_file_path=None):
     (daq, device, _) = zhinst.utils.create_api_session(device_id, apilevel_example)
     zhinst.utils.api_server_version_check(daq)
 
-    timestr = time.strftime("%Y%m%d_%H%M")
-    filename = timestr + '_settings.xml'  # Change this to the filename you want to save.
+    timestr = time.strftime("%Y%m%d_%H%M%S")
+    filename = timestr + '_example_save_device_settings_simple.xml'  # Change this to the filename you want to save.
     if settings_file_path:
         filename = settings_file_path + os.sep + filename
 

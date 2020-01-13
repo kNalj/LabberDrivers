@@ -48,10 +48,10 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
       amplitude (float, optional): The amplitude to set on the signal output.
 
       repetitions (int, optional): The value of the
-        dataAcquisitionModule/grid/repetitions parameter to use; if
+        DAQ module parameter grid/repetitions to use; if
         repetitions=n is greater than 1, the data is averaged n times.
 
-      save (int, optional): The value of the dataAcquisitionModule/save/save
+      save (int, optional): The value of the save/save
         parameter to use; save=0 - do not save the
         data to file, save=0 saves the data to file.
 
@@ -65,7 +65,7 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -83,6 +83,8 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
                                                            required_err_msg=err_msg)
     zhinst.utils.api_server_version_check(daq)
 
+    daq.setDebugLevel(0)
+
     # Create a base configuration: Disable all available outputs, awgs, demods, scopes,...
     zhinst.utils.disable_everything(daq, device)
 
@@ -91,7 +93,7 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
     # changed if the instrument has multiple input/output channels and/or either
     # the Multifrequency or Multidemodulator options installed.
     out_channel = 0
-    out_mixer_channel = zhinst.utils.default_output_mixer_channel(props)
+    out_mixer_channel = zhinst.utils.default_output_mixer_channel(props, out_channel)
     in_channel = 0
     demod_index = 0
     osc_index = 0
@@ -126,7 +128,7 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
     daq.sync()
 
     # Create an instance of the Data Acquisition Module.
-    trigger = daq.dataAcquisitionModule()
+    daq_module = daq.dataAcquisitionModule()
 
     # Below we will generate num_pulses pulses on the signal outputs in order to
     # demonstrate the triggering functionality. We'll configure the Software
@@ -137,20 +139,20 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
 
     # Configure the Data Acquisition Module.
     # Set the device that will be used for the trigger - this parameter must be set.
-    trigger.set('dataAcquisitionModule/device', device)
+    daq_module.set('device', device)
     # We will trigger on the demodulator sample's R value.
     trigger_path = '/%s/demods/%d/sample.r' % (device, demod_index)
     triggernode = trigger_path
-    trigger.set('dataAcquisitionModule/triggernode', triggernode)
+    daq_module.set('triggernode', triggernode)
     # Use an edge trigger.
-    trigger.set('dataAcquisitionModule/type', 1)  # 1 = edge
+    daq_module.set('type', 1)  # 1 = edge
     # Trigger on the positive edge.
-    trigger.set('dataAcquisitionModule/edge', 1)  # 1 = positive
+    daq_module.set('edge', 1)  # 1 = positive
     # The set the trigger level.
     # Scale by 1/sqrt(2) due to the demodulator's R RMS value.
     trigger_level = 0.5*(sigouts_low + sigouts_high)/np.sqrt(2)
-    print("Setting trigger/0/level to {:.3f}.".format(trigger_level))
-    trigger.set('dataAcquisitionModule/level', trigger_level)
+    print("Setting 0/level to {:.3f}.".format(trigger_level))
+    daq_module.set('level', trigger_level)
     # Set the trigger hysteresis to a percentage of the trigger level: This
     # ensures that triggering is robust in the presence of noise. The trigger
     # becomes armed when the signal passes through the hysteresis value and will
@@ -159,19 +161,19 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
     # edge trigger relative to the trigger level (positively for a negative edge
     # trigger).
     trigger_hysteresis = 0.05*trigger_level
-    print("Setting trigger/0/hysteresis {:.3f}.".format(trigger_hysteresis))
-    trigger.set('dataAcquisitionModule/hysteresis', trigger_hysteresis)
+    print("Setting hysteresis {:.3f}.".format(trigger_hysteresis))
+    daq_module.set('hysteresis', trigger_hysteresis)
     # Set the number of repetitions for the averaging
-    trigger.set('dataAcquisitionModule/grid/repetitions', repetitions)
+    daq_module.set('grid/repetitions', repetitions)
     # The number of times to trigger.
     trigger_count = int(num_pulses/2)
-    trigger.set('dataAcquisitionModule/count', trigger_count)
-    trigger.set('dataAcquisitionModule/holdoff/count', 0)
-    trigger.set('dataAcquisitionModule/holdoff/time', 0.100)
+    daq_module.set('count', trigger_count)
+    daq_module.set('holdoff/count', 0)
+    daq_module.set('holdoff/time', 0.100)
     trigger_delay = -0.020
-    trigger.set('dataAcquisitionModule/delay', trigger_delay)
+    daq_module.set('delay', trigger_delay)
     demod_rate = daq.getDouble('/%s/demods/%d/rate' % (device, demod_index))
-    # 'dataAcquisitionModule/grid/mode' - Specify the interpolation method of
+    # 'grid/mode' - Specify the interpolation method of
     #   the returned data samples.
     #
     # 1 = Nearest. If the interval between samples on the grid does not match
@@ -187,37 +189,37 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
     #     from the device) defines the interval between samples on the DAQ
     #     Module's grid. If multiple signals are subscribed, these are
     #     interpolated onto the grid (defined by the signal with the highest
-    #     rate, "highest_rate"). In this mode, dataAcquisitionModule/duration is
+    #     rate, "highest_rate"). In this mode, duration is
     #     read-only and is defined as num_cols/highest_rate.
-    trigger.set('dataAcquisitionModule/grid/mode', 4)
+    daq_module.set('grid/mode', 4)
     # The length of time to record each time we trigger
     trigger_duration = 0.18
-    trigger.set('dataAcquisitionModule/duration', trigger_duration)
+    daq_module.set('duration', trigger_duration)
     # To keep our desired duration we must calculate the number of samples so that it
     # fits with the demod sampling rate. Otherwise in exact mode, it will be adjusted to fit.
     sample_count = int(demod_rate * trigger_duration)
-    trigger.set('dataAcquisitionModule/grid/cols', sample_count)
-    trigger_duration = trigger.getDouble('dataAcquisitionModule/duration')
-    buffer_size = trigger.getInt('dataAcquisitionModule/buffersize')
+    daq_module.set('grid/cols', sample_count)
+    trigger_duration = daq_module.getDouble('duration')
+    buffer_size = daq_module.getInt('buffersize')
 
     # We subscribe to the same demodulator sample we're triggering on, but we
     # could additionally subscribe to other node paths.
     signal_path = '/%s/demods/%d/sample.r' % (device, demod_index)
     if repetitions > 1:
         signal_path += '.avg'
-    trigger.subscribe(signal_path)
+    daq_module.subscribe(signal_path)
 
     # Set the filename stem for saving the data to file. Each data segment is saved in a separate
     # numerically incrementing sub-directory prefixed with the /save/filename value.
     # The base directory is specified with the save/directory parameter. The default is
     # C:\Users\richardc\Documents\Zurich Instruments\LabOne\WebServer on Windows.
     # On linux $HOME/Zurich Instruments/LabOne/WebServer
-    trigger.set('dataAcquisitionModule/save/filename', 'sw_trigger_with_save')
+    daq_module.set('save/filename', 'sw_trigger_with_save')
     # Set the file format to use. 0 = MATLAB, 1 = CSV
-    trigger.set('dataAcquisitionModule/save/fileformat', 1)
+    daq_module.set('save/fileformat', 1)
 
     # Start the Data Acquisition's thread.
-    trigger.execute()
+    daq_module.execute()
     time.sleep(1.2*buffer_size)
 
     # Generate some pulses on the signal outputs by changing the signal output
@@ -235,11 +237,11 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
         daq.sync()
         time.sleep(0.1)
         # Check and display the progress.
-        progress = trigger.progress()
+        progress = daq_module.progress()
         print("Data Acquisition Module progress (acquiring {:d} triggers): {:.2%}.".format(
             trigger_count, progress[0]), end="\r")
         # Check whether the Data Acquisition Module has finished.
-        if trigger.finished():
+        if daq_module.finished():
             print("\nTrigger is finished.")
             break
     print("")
@@ -251,24 +253,21 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
     if save:
         # Indicate that the data should be saved to file. This must be done before the read() command.
         # Otherwise there is no longer any data to save.
-        trigger.set('dataAcquisitionModule/save/save', save)
+        daq_module.set('save/save', save)
 
     # Read the Data Acquisition's data, this command can also be executed before
-    # trigger.finished() is True. In that case data recorded up to that point in
+    # daq_module.finished() is True. In that case data recorded up to that point in
     # time is returned and we would still need to issue read() at the end to
     # fetch the rest of the data.
     return_flat_data_dict = True
-    data = trigger.read(return_flat_data_dict)
+    data = daq_module.read(return_flat_data_dict)
 
     if save:
         # Wait until the save is complete. The saving is done asynchronously in the background
         # so we need to check before clearing the module.
-        save_done = trigger.getInt('dataAcquisitionModule/save/save')
+        save_done = daq_module.getInt('save/save')
         while save_done != 0:
-            save_done = trigger.getInt('dataAcquisitionModule/save/save')
-
-    # Stop the Module's thread and clear the memory.
-    trigger.clear()
+            save_done = daq_module.getInt('save/save')
 
     # Check that the dictionary returned is non-empty.
     assert data, "read() returned an empty data dictionary, did you subscribe to any paths?"
@@ -298,12 +297,12 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
 
         # Plot some relevant Data Acquisition parameters.
         plt.axvline(0.0, linewidth=2, linestyle='--', color='k', label="Trigger time")
-        plt.axvline(trigger_delay, linewidth=2, linestyle='--', color='grey', label='dataAcquisitionModule/delay')
+        plt.axvline(trigger_delay, linewidth=2, linestyle='--', color='grey', label='delay')
         plt.axvline(trigger_duration + trigger_delay, linewidth=2, linestyle=':', color='k',
-                    label='dataAcquisitionModule/duration + dataAcquisitionModule/delay')
-        plt.axhline(trigger_level, linewidth=2, linestyle='-', color='k', label='dataAcquisitionModule/level')
+                    label='duration + delay')
+        plt.axhline(trigger_level, linewidth=2, linestyle='-', color='k', label='level')
         plt.axhline(trigger_level - trigger_hysteresis, linewidth=2, linestyle='-.', color='k',
-                    label='dataAcquisitionModule/hysteresis')
+                    label='hysteresis')
         axes.axvspan(trigger_delay, trigger_duration + trigger_delay, alpha=0.2, color='grey')
         axes.axhspan(trigger_level, trigger_level - trigger_hysteresis, alpha=0.5, color='grey')
         # Plot the signal segments returned by the Data Acquisition.
@@ -316,8 +315,9 @@ def run_example(device_id, do_plot=False, amplitude=0.25, repetitions=1, save=0)
             t = (sample['timestamp'] - float(trigger_ts))/clockbase
             plt.plot(t[0], sample['value'][0])
         plt.grid(True)
-        plt.title(("Data Acquisition's read() returned {} segments of demodulator data\n".format(len(samples)),
-                   "each with a duration of {:.3f} seconds".format(trigger_duration)))
+        title = "The Data Acquisition Module returned {} segments of demodulator data\n".format(len(samples)) + \
+                "each with a duration of {:.3f} seconds".format(trigger_duration)
+        plt.title(title)
         plt.xlabel('Time, relative to the trigger time ($s$)')
         plt.ylabel(r'Demodulator R ($V_\mathrm{RMS}$)')
         plt.ylim([round(0.5*amplitude, 2), round(1.5*amplitude, 2)])

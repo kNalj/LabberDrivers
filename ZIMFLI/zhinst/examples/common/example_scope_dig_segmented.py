@@ -56,7 +56,7 @@ def run_example(device_id, do_plot=False, scope_length=8192, module_historylengt
         (/dev..../scopes/0/length).
 
       module_historylength (int, optional): Value to use for the
-        scopeModule/historylength parameter.
+        historylength parameter.
 
     Returns:
 
@@ -71,7 +71,7 @@ def run_example(device_id, do_plot=False, scope_length=8192, module_historylengt
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -247,18 +247,18 @@ def run_example(device_id, do_plot=False, scope_length=8192, module_historylengt
 
     # Initialize and configure the Scope Module.
     scopeModule = daq.scopeModule()
-    # 'scopeModule/mode' : Scope data processing mode.
+    # 'mode' : Scope data processing mode.
     # 0 - Pass through scope segments assembled, returned unprocessed, non-interleaved.
     # 1 - Moving average, scope recording assembled, scaling applied, averaged, if averaging is enabled.
     # 2 - Not yet supported.
     # 3 - As for mode 1, except an FFT is applied to every segment of the scope recording.
-    scopeModule.set('scopeModule/mode', 1)
-    # 'scopeModule/averager/weight' : Average the scope shots using an exponentially weighted moving average of the
+    scopeModule.set('mode', 1)
+    # 'averager/weight' : Average the scope shots using an exponentially weighted moving average of the
     # previous 'weight' shots.
-    scopeModule.set('scopeModule/averager/weight', 1)
-    # 'scopeModule/historylength' : The number of scope records to keep in the Scope Module's memory, when more records
+    scopeModule.set('averager/weight', 1)
+    # 'historylength' : The number of scope records to keep in the Scope Module's memory, when more records
     #   arrive in the Module from the device the oldest records are overwritten.
-    scopeModule.set('scopeModule/historylength', module_historylength)
+    scopeModule.set('historylength', module_historylength)
 
     # Subscribe to the scope's data in the module.
     wave_nodepath = '/{}/scopes/0/wave'.format(device)
@@ -297,7 +297,7 @@ def run_example(device_id, do_plot=False, scope_length=8192, module_historylengt
             # segments (>= 1) has been recorded the scope will automatically stop. Note: The device node scopes/0/single
             # will be set back to 0 by the device after recording one record.
             daq.setInt('/%s/scopes/0/single' % device, 1)
-        scopeModule.set('scopeModule/clearhistory', 1)
+        scopeModule.set('clearhistory', 1)
 
         d = get_scope_records(device, daq, scopeModule, module_historylength)
         # Check the dictionary returned by read contains the expected data. The data returned is a dictionary with keys
@@ -316,9 +316,6 @@ def run_example(device_id, do_plot=False, scope_length=8192, module_historylengt
             check_scope_record_flags(d[wave_nodepath])
             data[wave_nodepath].append(d[wave_nodepath])
         print("")
-
-    # Stop the module's thread and remove it and its data from memory.
-    scopeModule.clear()
 
     if do_plot and data[wave_nodepath]:
         import matplotlib.pyplot as plt
@@ -339,7 +336,7 @@ def run_example(device_id, do_plot=False, scope_length=8192, module_historylengt
             segments = wave.reshape(segment_counts[index], scope_length)
             # Create a time array relative to the trigger time.
             dt = records[0][0]['dt']
-            # The timestamp is the last timestamp of the last sample in the scope segment.
+            # The timestamp is the timestamp of the last sample in the scope segment.
             timestamp = records[0][0]['timestamp']
             triggertimestamp = records[0][0]['triggertimestamp']
             t_segment = np.arange(-scope_length, 0)*dt + (timestamp - triggertimestamp)/float(clockbase)
@@ -375,7 +372,7 @@ def get_scope_records(device, daq, scopeModule, num_records=1):
     # Wait until the Scope Module has received and processed the desired number of records.
     while (records < num_records) or (progress < 1.0):
         time.sleep(0.5)
-        records = scopeModule.getInt("scopeModule/records")
+        records = scopeModule.getInt("records")
         progress = scopeModule.progress()[0]
         print(("Scope module has acquired {} records (requested {}). "
                "Progress of current segment {}%.").format(records, num_records, 100.*progress), end='\r')
@@ -419,7 +416,7 @@ def check_scope_record_flags(scope_records):
             print('Warning: Scope record {}/{} flag indicates dataloss.'.format(index, num_records))
         if record[0]['flags'] & 2:
             print('Warning: Scope record {}/{} indicates missed trigger.'.format(index, num_records))
-        if record[0]['flags'] & 3:
+        if record[0]['flags'] & 4:
             print('Warning: Scope record {}/{} indicates transfer failure (corrupt data).'.format(index, num_records))
         totalsamples = record[0]['totalsamples']
         for wave in record[0]['wave']:

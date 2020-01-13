@@ -15,7 +15,7 @@ own thread to communicate with the data server.
 Grid Mode enables interpolation of the triggered data onto the specified columns
 of the grid and alignment of (num_rows) multiple triggers into the rows of the
 grid. This example demonstrates basic Grid Mode usage without an addition
-operation, e.g., averaging, on the recorded data (trigger/0/grid/operation is
+operation, e.g., averaging, on the recorded data (/0/grid/operation is
 0).
 
 This example records the demodulator data as is - essentially a constant value
@@ -67,7 +67,7 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -143,9 +143,9 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     trigger = daq.record()
 
     # Set the device that will be used for the trigger - this parameter must be set.
-    trigger.set('trigger/device', device)
+    trigger.set('device', device)
     # We will trigger on a positive edge of a demodulator sample R value.
-    # trigger/0/type (int):
+    # /0/type (int):
     #   NO_TRIGGER = 0
     #   EDGE_TRIGGER = 1
     #   DIGITAL_TRIGGER = 2
@@ -154,8 +154,8 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     #   HW_TRIGGER = 6
     #   TRACKING_PULSE_TRIGGER = 7
     #   EVENT_COUNT_TRIGGER = 8
-    trigger.set('trigger/0/type', 1)
-    # trigger/0/triggernode (char):
+    trigger.set('/0/type', 1)
+    # /0/triggernode (char):
     #   Specify the trigger signal to trigger on. The trigger signal comprises
     #   of a device node path appended with a trigger field seperated by a dot.
     #   For demodulator samples, the following trigger fields are available:
@@ -174,23 +174,23 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     #   SAMPLE.TRIGAWGTRIGN = AWG Trigger N  (where supported)
     triggerpath = '/%s/demods/%d/sample' % (device, trigger_demod_index)
     triggernode = triggerpath + '.r'
-    trigger.set('trigger/0/triggernode', triggernode)
-    # trigger/0/edge (int):
+    trigger.set('/0/triggernode', triggernode)
+    # /0/edge (int):
     #   Specify which edge type to trigger on.
     #   POS_EDGE = 1
     #   NEG_EDGE = 2
     #   BOTH_EDGE = 3
-    trigger.set('trigger/0/edge', 1)
-    # Note: We do not manually set trigger/0/level and trigger/0/hysteresis in
-    # this example, rather we set the trigger/0/findlevel parameter to 1 and let
+    trigger.set('/0/edge', 1)
+    # Note: We do not manually set 0/level and 0/hysteresis in
+    # this example, rather we set the 0/findlevel parameter to 1 and let
     # the SW Trigger Module determine an appropriate level and hysteresis for us.
     #
-    # trigger/0/level (double):
+    # /0/level (double):
     # The set the trigger level.
     # trigger_level = 0.70
-    # trigger.set('trigger/0/level', trigger_level)
+    # trigger.set('/0/level', trigger_level)
     #
-    # trigger/0/hysteresis (double):
+    # /0/hysteresis (double):
     #   The hysterisis is effectively a second criteria (if non-zero) for
     #   triggering and makes triggering more robust in noisy signals. When the
     #   trigger `level` is violated, then the signal must return beneath (for
@@ -200,52 +200,52 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     # than trigger_duration.
     trigger_duration = 0.010
     buffer_size = max(0.500, 1.1*trigger_duration)
-    trigger.set('trigger/buffersize', buffer_size)
+    trigger.set('buffersize', buffer_size)
     # The length of time to record the data for each time we trigger.
-    trigger.set('trigger/0/duration', trigger_duration)
+    trigger.set('/0/duration', trigger_duration)
     trigger_delay = -0.25*trigger_duration
-    trigger.set('trigger/0/delay', trigger_delay)
+    trigger.set('/0/delay', trigger_delay)
     # Do not extend the size of the returned trigger frame if new triggers
     # arrive whilst recording a trigger.
-    trigger.set('trigger/0/retrigger', 0)
+    trigger.set('/0/retrigger', 0)
     # Do not return overlapped trigger events.
-    trigger.set('trigger/0/holdoff/time', trigger_duration)
-    trigger.set('trigger/0/holdoff/count', 0)
+    trigger.set('/0/holdoff/time', trigger_duration)
+    trigger.set('/0/holdoff/count', 0)
 
-    # Unrequired parameters when trigger/0/type is EDGE_TRIGGER:
-    # trigger.set('trigger/0/bitmask', 1)  % For DIGITAL_TRIGGER
-    # trigger.set('trigger/0/bits', 1)  % For DIGITAL_TRIGGER
-    # trigger.set('trigger/0/bandwidth', 10)  % For TRACKING_TRIGGER
+    # Unrequired parameters when 0/type is EDGE_TRIGGER:
+    # trigger.set('/0/bitmask', 1)  % For DIGITAL_TRIGGER
+    # trigger.set('/0/bits', 1)  % For DIGITAL_TRIGGER
+    # trigger.set('/0/bandwidth', 10)  % For TRACKING_TRIGGER
 
     # SW Trigger Grid Mode configuration:
-    # trigger/0/grid/mode (int)
+    # /0/grid/mode (int)
     #   Enable/disable grid mode:
     #     0: Disable grid mode.
     #     1: Enable with nearest neighbour interpolation for the column data.
     #     2: Enable with linear interpolation for the column data.
-    trigger.set('trigger/0/grid/mode', 2)
-    # Note: trigger/0/grid/operation is not relevant if repetitions is 1, see
+    trigger.set('/0/grid/mode', 2)
+    # Note: /0/grid/operation is not relevant if repetitions is 1, see
     # below.
-    # trigger/0/grid/operation (int)
+    # /0/grid/operation (int)
     #   If the number of repetitions > 1, either replace or average the data in
     #     the grid:
     #     0: Replace.
     #     1: Average.
-    trigger.set('trigger/0/grid/operation', 0)
-    # trigger/0/grid/repetitions (int)
-    #   The number of times to perform trigger/0/grid/operation.
-    trigger.set('trigger/0/grid/repetitions', 0)
-    # trigger/0/grid/cols (int)
+    trigger.set('/0/grid/operation', 0)
+    # 0/grid/repetitions (int)
+    #   The number of times to perform 0/grid/operation.
+    trigger.set('/0/grid/repetitions', 0)
+    # 0/grid/cols (int)
     #   Specify the number of columns in the grid's matrix. The data from each
     #     row is interpolated onto a grid with the specified number of columns.
     num_cols = 500
-    trigger.set('trigger/0/grid/cols', num_cols)
-    # trigger/0/grid/rows (int)
+    trigger.set('/0/grid/cols', num_cols)
+    # /0/grid/rows (int)
     #   Specify the number of rows in the grid's matrix. Each row is the data
     #   recorded from one trigger.
     num_rows = 500
-    trigger.set('trigger/0/grid/rows', 500)
-    # trigger/0/grid/direction (int)
+    trigger.set('/0/grid/rows', 500)
+    # /0/grid/direction (int)
     #   Specify the ordering of the data stored in the grid's matrix.
     #     0: Forward - the data in each row is ordered chronologically, e.g., the
     #       first data point in each row corresponds to the first timestamp in the
@@ -255,13 +255,13 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     #       timestamp in the trigger data.
     #     2: Bidirectional - the ordering of the data alternates between Forward
     #        and Backward ordering from row-to-row. The first row is Forward ordered.
-    trigger.set('trigger/0/grid/direction', 0)
+    trigger.set('/0/grid/direction', 0)
 
     # The number of grids to record (if not running in endless mode).
-    # In grid mode, we will obtain trigger/0/count grids. The total
-    # number of triggers is equal to n = trigger/0/count *
-    # trigger/0/grid/rows * trigger/0/grid/repetitions
-    trigger.set('trigger/0/count', num_grids)
+    # In grid mode, we will obtain 0/count grids. The total
+    # number of triggers is equal to n = 0/count *
+    # /0/grid/rows * /0/grid/repetitions
+    trigger.set('/0/count', num_grids)
 
     # We will perform intermediate reads from the module. When a grid is
     # complete and read() is called, the data is removed from the module. We
@@ -311,19 +311,18 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
     # Start the Software Trigger's thread. Ready to record triggers.
     trigger.execute()
     # Tell the SW Trigger to determine the trigger level.
-    trigger.set('trigger/0/findlevel', 1)
+    trigger.set('/0/findlevel', 1)
     time.sleep(0.1)  # Ensure findlevel has been set before continuing.
-    trigger_params = trigger.get('trigger/*', True)
+    trigger_params = trigger.get('*', True)
     timeout = 10  # [s]
     t0 = time.time()
     while trigger_params['/0/findlevel'] == 1:
         time.sleep(0.05)
-        trigger_params = trigger.get('trigger/*', True)
+        trigger_params = trigger.get('*', True)
         if time.time() - t0 > timeout:
             trigger.finish()
-            trigger.clear()
             raise RuntimeError("SW Trigger didn't find trigger level after %.3f seconds." % timeout)
-    print("SW Trigger found and set trigger/0/level: {}, trigger/0/hysteresis: {}.".format(
+    print("SW Trigger found and set /0/level: {}, /0/hysteresis: {}.".format(
         trigger_params['/0/level'][0], trigger_params['/0/hysteresis'][0]))
 
     flags = 0
@@ -335,7 +334,7 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
         # Read out the intermediate data captured by the SW Trigger.
         data_read = trigger.read(return_flat_data_dict)
         if (triggerpath in data_read) and data_read[triggerpath]:
-            # Note, if trigger/0/count > 1 then more than one grid could be returned.
+            # Note, if /0/count > 1 then more than one grid could be returned.
             num_grids_read = len(data_read[triggerpath])
             for i in range(num_grids_read):
                 flags = data_read[triggerpath][i]['header']['flags']
@@ -369,12 +368,10 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
                 # If we didn't even get one grid, stop the module, delete its
                 # thread and raise an error.
                 trigger.finish()
-                trigger.clear()
                 raise RuntimeError("Failed to record any grids before timeout ({} seconds). ".format(timeout))
-            else:
-                print('Recorded {} grids. Loop timed-out after {} s before acquiring all {} grids.'.format(
-                    num_finished_grids, timeout, num_grids))
-                break
+            print('Recorded {} grids. Loop timed-out after {} s before acquiring all {} grids.'.format(
+                num_finished_grids, timeout, num_grids))
+            break
 
     if not flags & 1:
         # The SW Trigger finished recording since performing the previous intermediate
@@ -397,9 +394,6 @@ def run_example(device_id, amplitude=0.25, num_grids=3, do_plot=False):
 
     # Stop the Module (this is also ok if trigger.finished() is True).
     trigger.finish()
-
-    # Stop the Module's thread and clear the memory.
-    trigger.clear()
 
     if do_plot:
         plt.ioff()

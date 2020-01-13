@@ -49,7 +49,7 @@ def run_example(device_id, settings_file_path=None):
 
       RuntimeError: If the device is not "discoverable" from the API.
 
-    See the "LabOne Programing Manual" for further help, available:
+    See the "LabOne Programming Manual" for further help, available:
       - On Windows via the Start-Menu:
         Programs -> Zurich Instruments -> Documentation
       - On Linux in the LabOne .tar.gz archive in the "Documentation"
@@ -64,16 +64,16 @@ def run_example(device_id, settings_file_path=None):
     (daq, device, _) = zhinst.utils.create_api_session(device_id, apilevel_example)
     zhinst.utils.api_server_version_check(daq)
 
-    timestr = time.strftime("%Y%m%d_%H%M")
-    filename_noext = timestr + '_settings'  # Change this to the filename you want to save.
+    timestr = time.strftime("%Y%m%d_%H%M%S")
+    filename_noext = timestr + '_example_save_device_settings_expert'  # Change this to the filename you want to save.
 
     device_settings = daq.deviceSettings()
-    device_settings.set('deviceSettings/device', device)
-    device_settings.set('deviceSettings/filename', filename_noext)
+    device_settings.set('device', device)
+    device_settings.set('filename', filename_noext)
     if settings_file_path:
-        device_settings.set('deviceSettings/path', settings_file_path)
+        device_settings.set('path', settings_file_path)
     # Set the path to '.' save to the current directory.
-    # device_settings.set('deviceSettings/path', '.')
+    # device_settings.set('path', '.')
     # NOTE: in this case, this example will have to be executed from a folder
     # where you have write access.
 
@@ -81,13 +81,13 @@ def run_example(device_id, settings_file_path=None):
 
     # Save the instrument's current settings.
     print("Saving settings...")
-    device_settings.set('deviceSettings/command', 'save')
+    device_settings.set('command', 'save')
     device_settings.execute()
     while not device_settings.finished():
         time.sleep(0.2)
     print("Done.")
 
-    data = device_settings.get('deviceSettings/path')
+    data = device_settings.get('path')
     path = data['path'][0]
     filename_full_path = os.path.join(path, filename_noext) + '.xml'
     assert os.path.isfile(filename_full_path), "Failed to save settings file '%s'" % filename_full_path
@@ -97,12 +97,11 @@ def run_example(device_id, settings_file_path=None):
 
     # Load the settings.
     print("Loading settings...")
-    device_settings.set('deviceSettings/command', 'save')
+    device_settings.set('command', 'save')
     device_settings.execute()
     while not device_settings.finished():
         time.sleep(0.2)
     print("Done.")
-    device_settings.clear()
 
     return filename_full_path
 
