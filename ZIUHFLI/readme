@@ -3,15 +3,20 @@ A short guide on how to make this instrument work with Labber.
 
 ## How to:
 (Shoutout to Simon from Labber team)
-1) Install [Labber](http://labber.org/)
-2) Install [LabOne](https://www.zhinst.com/downloads)
-3) Install [Python](https://www.python.org/)
+1) Install [Labber](http://labber.org/) - Dont use the one you have, get the latest version
+2) Install [LabOne](https://www.zhinst.com/downloads) - Dont use the one you have, install latest version
+3) Install [Python](https://www.python.org/) - Check the latest python that supports zhinst package
+  3.1) Install pyvisa package
+  3.2) Install future package
 4) Install the [zhinst package](https://pypi.org/project/zhinst/) into your python
 5) Copy the **zhinst** package folder (package folder will usually be placed within the python folder. Something like 
 this: C:\Users\username\AppData\Local\Programs\Python\Python36\Lib\site-packages) into the Labbers driver folder for ZIUHFLI
 instrument (something like this: C:\Program Files (x86)\Labber\Drivers\Zurich Instruments UHF)
-6) Connect the ZIUHFLI to your PC and turn it on
-7) Start LabOne and connect to ZIUHFLI
-8) Start Labber
-9) Add the instrument to the instrument server
-10) Connect to the instrument
+6) Configure which python is your Labber using (Edit -> Preferences -> Advanced -> Python distribution -> select the python.exe from the location where you installed your python)
+7) Connect the ZIUHFLI to your PC and turn it on
+8) Start LabOne
+9) Change ZIUHFLI to use local server instead of the default one
+10) Connect to ZIUHFLI (AFTER YOU CHANGED THE SERVER !)
+sqrt(121)) Start Labber
+12) Add the instrument to the instrument server
+13) Connect to the instrument
