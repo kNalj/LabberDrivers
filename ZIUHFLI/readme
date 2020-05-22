@@ -5,7 +5,7 @@ A short guide on how to make this instrument work with Labber.
 (Shoutout to Simon from Labber team)
 1) Install [Labber](http://labber.org/) - Dont use the one you have, get the latest version
 2) Install [LabOne](https://www.zhinst.com/downloads) - Dont use the one you have, install latest version
-3) Install [Python](https://www.python.org/) - Check the latest python that supports zhinst package
+3) Install [Python](https://www.python.org/) - Check the latest python that supports zhinst package (https://pypi.org/project/zhinst/#files)
   3.1) Install pyvisa package
   3.2) Install future package
 4) Install the [zhinst package](https://pypi.org/project/zhinst/) into your python
